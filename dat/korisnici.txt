@@ -1,0 +1,12 @@
+ime
+pass
+0
+ime2
+pass2
+0
+admin
+pass
+1
+novi_user
+pass
+0

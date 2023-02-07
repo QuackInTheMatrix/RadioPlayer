@@ -2,12 +2,18 @@ package hr.java.player.entiteti;
 
 public class Korisnik {
     String username;
-    String password;
+    Integer passwordHash;
+    String ime;
+    String prezime;
+    String email;
     RazinaOvlasti razinaOvlasti;
 
-    public Korisnik(String username, String password, RazinaOvlasti razinaOvlasti) {
+    public Korisnik(String username, Integer passwordHash, String ime, String prezime, String email, RazinaOvlasti razinaOvlasti) {
         this.username = username;
-        this.password = password;
+        this.passwordHash = passwordHash;
+        this.ime = ime;
+        this.prezime = prezime;
+        this.email = email;
         this.razinaOvlasti = razinaOvlasti;
     }
 
@@ -19,12 +25,12 @@ public class Korisnik {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public Integer getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordHash(Integer password) {
+        this.passwordHash = password;
     }
 
     public RazinaOvlasti getRazinaOvlasti() {
@@ -35,8 +41,27 @@ public class Korisnik {
         this.razinaOvlasti = razinaOvlasti;
     }
 
-    @Override
-    public String toString() {
-        return this.username+'\n'+this.password+'\n'+this.razinaOvlasti.getRazina()+"\n";
+    public String getIme() {
+        return ime;
+    }
+
+    public void setIme(String ime) {
+        this.ime = ime;
+    }
+
+    public String getPrezime() {
+        return prezime;
+    }
+
+    public void setPrezime(String prezime) {
+        this.prezime = prezime;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

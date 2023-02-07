@@ -18,16 +18,22 @@
                 </Menu>
             <Menu mnemonicParsing="false" text="Radio">
               <items>
-                <MenuItem mnemonicParsing="false" text="Slusaj" />
-                  <MenuItem mnemonicParsing="false" text="Dodaj" />
-                  <MenuItem mnemonicParsing="false" text="Ukloni" />
-                  <MenuItem mnemonicParsing="false" text="Izmjeni" />
+                <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Slusaj" />
+                  <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Dodaj" />
+                  <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Ukloni" />
+                  <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Izmjeni" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Playback">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#playbackControl" text="Play" />
+                  <MenuItem mnemonicParsing="false" onAction="#playbackControl" text="Pauziraj" />
               </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Administracija">
               <items>
-                <MenuItem mnemonicParsing="false" text="Korisnici" />
-                  <MenuItem mnemonicParsing="false" text="Promjene" />
+                <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Korisnici" />
+                  <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Promjene" />
               </items>
             </Menu>
             </menus>

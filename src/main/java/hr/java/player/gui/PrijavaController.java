@@ -1,13 +1,10 @@
 package hr.java.player.gui;
 
-import hr.java.player.entiteti.Korisnik;
 import hr.java.player.util.DatotekaKorisnika;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 public class PrijavaController {
     @FXML
@@ -17,9 +14,13 @@ public class PrijavaController {
 
     @FXML
     void prijava(){
-        Set<Korisnik> sviKorisnici = DatotekaKorisnika.dohvatiSve();
-        if (sviKorisnici.stream().filter(korisnik -> korisnik.getUsername().equals(usernameField.getText())).filter(korisnik -> korisnik.getPassword().equals(passwordField.getText())).collect(Collectors.toSet()).size()==1){
-            System.out.println("Uspjesna prijava");
+        Map<String,Integer> sviKorisnici = DatotekaKorisnika.dohvatiSve();
+        if (sviKorisnici.containsKey(usernameField.getText()) && sviKorisnici.get(usernameField.getText())==passwordField.getText().hashCode()){
+            System.out.println("Uspjesna prijava!");
+            //TODO: kreiranje korisnickog objekta iz baze i ispit Alert poruke umjesto sout
+        }else{
+            System.out.println("Neuspjesna prijava!");
+            // TODO: alert poruka umjesto sout
         }
     }
 }

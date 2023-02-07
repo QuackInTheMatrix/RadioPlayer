@@ -4,12 +4,17 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
 public class GlavnaAplikacija extends Application {
     private static Stage mainStage;
+    private static Media media;
+    private static MediaPlayer mediaPlayer;
     @Override
     public void start(Stage stage) throws IOException {
         mainStage = stage;
@@ -18,6 +23,27 @@ public class GlavnaAplikacija extends Application {
         stage.setTitle("Radio player");
         stage.setScene(scene);
         stage.show();
+    }
+
+    public static void playMedia(String url, MediaView mediaView){
+        media = new Media(url);
+        mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setVolume(0.2);
+        mediaView.setMediaPlayer(mediaPlayer);
+        mediaPlayer.setVolume(0.1);
+        mediaPlayer.play();
+    }
+
+    public static void PlayMedia(){
+        if (media!=null && mediaPlayer!=null){
+            mediaPlayer.play();
+        }
+    }
+
+    public static void stopMedia(){
+        if (media!=null && mediaPlayer!=null) {
+            mediaPlayer.stop();
+        }
     }
 
     public static void setNewStage(BorderPane root){

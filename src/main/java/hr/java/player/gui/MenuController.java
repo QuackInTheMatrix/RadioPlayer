@@ -17,6 +17,7 @@ public class MenuController {
             switch (kliknuti.getText()){
                 case "Registracija" -> imeDatoteke="registracija";
                 case "Odjava" -> {odjaviKorisnika(); imeDatoteke="prijava";}
+                case "Slusaj" -> imeDatoteke="slusanje";
                 default -> imeDatoteke="prijava";
             }
             BorderPane root = FXMLLoader.load(getClass().getResource(imeDatoteke+".fxml"));
@@ -28,5 +29,12 @@ public class MenuController {
     @FXML
     void odjaviKorisnika(){
         //TODO: implementirati odjavu korisnika
+    }
+    @FXML
+    void playbackControl(ActionEvent event){
+        switch (((MenuItem)event.getSource()).getText()){
+            case "Play" -> GlavnaAplikacija.PlayMedia();
+            case "Pauziraj" -> GlavnaAplikacija.stopMedia();
+        }
     }
 }

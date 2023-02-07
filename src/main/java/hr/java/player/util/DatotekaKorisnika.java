@@ -1,30 +1,26 @@
 package hr.java.player.util;
 
 import hr.java.player.entiteti.Korisnik;
-import hr.java.player.entiteti.RazinaOvlasti;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DatotekaKorisnika {
     public static final String PATH_KORISNIKA = "dat/korisnici.txt";
 
-    public static Set<Korisnik> dohvatiSve(){
-        Set<Korisnik> korisnici = new HashSet<>();
+    public static Map<String,Integer> dohvatiSve(){
+        Map<String,Integer> korisnici = new HashMap<>();
         try (BufferedReader in = new BufferedReader(new FileReader(PATH_KORISNIKA))) {
-            String username, password;
-
+            String username;
+            Integer passwordHash;
             while ((username = in.readLine()) != null) {
-                password = in.readLine();
-                Integer razina = Integer.parseInt(in.readLine());
-                RazinaOvlasti ovlasti = switch (razina){case 0 -> RazinaOvlasti.USER; case 1 -> RazinaOvlasti.ADMIN;};
-                korisnici.add(new Korisnik(username,password,ovlasti));
+                passwordHash = Integer.parseInt(in.readLine());
+                korisnici.put(username,passwordHash);
             }
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
@@ -33,7 +29,8 @@ public class DatotekaKorisnika {
     }
     public static void unesiKorisnika(Korisnik korisnik){
         try {
-            Files.writeString(Path.of(PATH_KORISNIKA),korisnik.toString(), StandardOpenOption.APPEND);
+            String korisnikString = korisnik.getUsername()+'\n'+korisnik.getPasswordHash()+'\n';
+            Files.writeString(Path.of(PATH_KORISNIKA),korisnikString, StandardOpenOption.APPEND);
         }catch (IOException ex){
             ex.printStackTrace();
         }

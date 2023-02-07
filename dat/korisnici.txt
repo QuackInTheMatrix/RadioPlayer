@@ -1,12 +1,4 @@
-ime
-pass
-0
-ime2
-pass2
-0
+user
+1216985755
 admin
-pass
-1
-novi_user
-pass
-0
+1216985755

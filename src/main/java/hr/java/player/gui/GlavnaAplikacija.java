@@ -28,7 +28,6 @@ public class GlavnaAplikacija extends Application {
     public static void playMedia(String url, MediaView mediaView){
         media = new Media(url);
         mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.setVolume(0.2);
         mediaView.setMediaPlayer(mediaPlayer);
         mediaPlayer.setVolume(0.1);
         mediaPlayer.play();

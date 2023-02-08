@@ -1,33 +1,35 @@
 package hr.java.player.gui;
 
-import de.sfuhrm.radiobrowser4j.RadioBrowser;
-import de.sfuhrm.radiobrowser4j.SearchMode;
-import de.sfuhrm.radiobrowser4j.Station;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.media.MediaView;
-import java.util.stream.Collectors;
+import javafx.scene.control.Slider;
 
 public class SlusanjeController {
     @FXML
     private Label trenutnaPjesmaLabel, trenutniRadioLabel, trenutnaZemljaLabel, trenutniJezikLabel, trenutniBitrateLabel;
     @FXML
-    private MediaView mediaView;
+    private Slider volumeSlider;
 
     @FXML
     void initialize() {
+        volumeSlider.valueProperty().addListener(((observableValue, oldValue, newValue) -> GlavnaAplikacija.changeVolume((Double) newValue)));
         //TODO: inicijalizacija tablice
+        if (GlavnaAplikacija.isPlaying()){
+            //TODO: updateaj sve podatke o radiju
+        }
     }
     public void pokreniRadio(){
-        //TODO: dodati uzimanje oznacenog radia iz tableview-a
-//        RadioBrowser browser = new RadioBrowser(5000, "Demo agent/1.0");
+        //TODO: dodati uzimanje oznacenog radija iz tableview-a
+
+
 //        Station trazena = browser.listStationsBy(SearchMode.BYNAME, "Otvoreni")
 //                .limit(100)
 //                .collect(Collectors.toList()).get(0);
 //
-//        browser.listStationsBy(SearchMode.BYCOUNTRY, "Croatia").forEach(station -> System.out.println(station.getName() + " " + station.getUrl()));
+//        browser.listStationsBy(SearchMode.BYCOUNTRY, "Croatia").forEach(station -> System.out.println(station.getName() + " " + station.getUrl()+" "+station.getBitrate()));
 
-        GlavnaAplikacija.playMedia("http://21223.live.streamtheworld.com/PROGRAM2.mp3", mediaView);
+        GlavnaAplikacija.playMedia("http://21223.live.streamtheworld.com/PROGRAM2.mp3");
+        //TODO: updateati podatke o radiju koji svira
     }
 
     public void pauzirajRadio(){

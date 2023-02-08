@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hr.java.player.gui.DodavanjeStanicaController">
+    <top>
+        <fx:include prefHeight="10.0" source="menu.fxml" BorderPane.alignment="TOP_LEFT" />
+    </top>
+    <bottom>
+        <TableView fx:id="radioTableView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <columns>
+                <TableColumn fx:id="nazivColumn" prefWidth="140.0" text="Naziv" />
+                <TableColumn fx:id="zanrColumn" prefWidth="160.0" text="Zanrovi" />
+                <TableColumn fx:id="zemljaColumn" prefWidth="112.0" text="Zemlja" />
+                <TableColumn fx:id="codecColumn" minWidth="0.0" prefWidth="102.0" text="Codec" />
+                <TableColumn fx:id="bitrateColumn" prefWidth="85.0" text="Bitrate" />
+            </columns>
+        </TableView>
+    </bottom>
+    <center>
+        <GridPane BorderPane.alignment="CENTER">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Label text="Odaberi radio i dodaj ga u favorite" GridPane.columnSpan="4" GridPane.halignment="CENTER">
+                    <font>
+                        <Font name="System Bold" size="16.0" />
+                    </font>
+                </Label>
+            <Label text="Naziv:" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
+            <Label text="Zanr:" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
+            <Label text="Zemlja:" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />
+            <Label text="Codec:" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="5" />
+            <Label text="Bitrate:" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="6" />
+            <Button mnemonicParsing="false" onAction="#pretrazi" text="Pretrazi" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+            <Button mnemonicParsing="false" onAction="#dodaj" text="Dodaj" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="7" />
+            <TextField fx:id="nazivField" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <TextField fx:id="zanrField" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <TextField fx:id="zemljaField" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+            <TextField fx:id="codecField" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+            <TextField fx:id="bitrateField" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+            <ChoiceBox fx:id="tipPretrageChoiceBox" prefWidth="150.0" value="Naziv" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Naziv" />
+                        <String fx:value="Zanr" />
+                        <String fx:value="Zemlja" />
+                        <String fx:value="Codec" />
+                    </FXCollections>
+                </items>
+            </ChoiceBox>
+            <TextField fx:id="glavnaPretragaField" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            </children>
+            <padding>
+                <Insets bottom="20.0" top="20.0" />
+            </padding>
+        </GridPane>
+    </center>
+</BorderPane>

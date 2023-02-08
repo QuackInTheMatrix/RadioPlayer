@@ -18,6 +18,7 @@ public class MenuController {
                 case "Registracija" -> imeDatoteke="registracija";
                 case "Odjava" -> {odjaviKorisnika(); imeDatoteke="prijava";}
                 case "Slusaj" -> imeDatoteke="slusanje";
+                case "Dodaj" -> imeDatoteke="dodavanjeStanica";
                 default -> imeDatoteke="prijava";
             }
             BorderPane root = FXMLLoader.load(getClass().getResource(imeDatoteke+".fxml"));

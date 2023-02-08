@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -15,6 +14,7 @@ public class GlavnaAplikacija extends Application {
     private static Stage mainStage;
     private static Media media;
     private static MediaPlayer mediaPlayer;
+    private static Double currentVolume=0.1;
     @Override
     public void start(Stage stage) throws IOException {
         mainStage = stage;
@@ -25,11 +25,17 @@ public class GlavnaAplikacija extends Application {
         stage.show();
     }
 
-    public static void playMedia(String url, MediaView mediaView){
+    public static void changeVolume(Double newVolume){
+        currentVolume=newVolume/100.0;
+        if (mediaPlayer!=null){
+            mediaPlayer.setVolume(currentVolume);
+        }
+    }
+
+    public static void playMedia(String url){
         media = new Media(url);
         mediaPlayer = new MediaPlayer(media);
-        mediaView.setMediaPlayer(mediaPlayer);
-        mediaPlayer.setVolume(0.1);
+        mediaPlayer.setVolume(currentVolume);
         mediaPlayer.play();
     }
 
@@ -49,6 +55,14 @@ public class GlavnaAplikacija extends Application {
         Scene scene = new Scene(root,600,500);
         mainStage.setScene(scene);
         mainStage.show();
+    }
+
+    public static boolean isPlaying(){
+        if (mediaPlayer!=null && mediaPlayer.getStatus().equals(MediaPlayer.Status.PLAYING)){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public static void main(String[] args) {

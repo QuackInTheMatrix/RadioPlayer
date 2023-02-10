@@ -7,14 +7,24 @@ public class Korisnik {
     String prezime;
     String email;
     RazinaOvlasti razinaOvlasti;
+    Long id;
 
-    public Korisnik(String username, Integer passwordHash, String ime, String prezime, String email, RazinaOvlasti razinaOvlasti) {
+    public Korisnik(String username, Integer passwordHash, String ime, String prezime, String email, RazinaOvlasti razinaOvlasti, Long id) {
         this.username = username;
         this.passwordHash = passwordHash;
         this.ime = ime;
         this.prezime = prezime;
         this.email = email;
         this.razinaOvlasti = razinaOvlasti;
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUsername() {

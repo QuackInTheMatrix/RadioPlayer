@@ -1,5 +1,7 @@
 package hr.java.player.gui;
 
+import hr.java.player.baza.BazaPodataka;
+import hr.java.player.entiteti.Korisnik;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -14,6 +16,7 @@ public class GlavnaAplikacija extends Application {
     private static Stage mainStage;
     private static MediaPlayer mediaPlayer;
     private static Double currentVolume=0.1;
+    private static Korisnik prijavljeniKorisnik;
     @Override
     public void start(Stage stage) throws IOException {
         mainStage = stage;
@@ -22,6 +25,23 @@ public class GlavnaAplikacija extends Application {
         stage.setTitle("Radio player");
         stage.setScene(scene);
         stage.show();
+    }
+
+    public static boolean isLoggedIn(){
+        return prijavljeniKorisnik!=null;
+    }
+
+    public static Korisnik getKorisnik(){
+        return prijavljeniKorisnik;
+    }
+
+    public static void prijaviKorisnika(String username){
+        prijavljeniKorisnik = BazaPodataka.dohvatiKorisnike(null,username,"","","",null,null).get(0);
+        //TODO: alert sa obavjesti da je prijava izvrsena uspjesno
+    }
+
+    public static void odjaviKorisnika(){
+        prijavljeniKorisnik=null;
     }
 
     public static MediaPlayer.Status getStatus(){
@@ -45,7 +65,6 @@ public class GlavnaAplikacija extends Application {
         }
         Media media = new Media(url);
         mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         mediaPlayer.setVolume(currentVolume);
         mediaPlayer.play();
     }
@@ -56,9 +75,9 @@ public class GlavnaAplikacija extends Application {
         }
     }
 
-    public static void stopMedia(){
+    public static void pauseMedia(){
         if (mediaPlayer!=null) {
-            mediaPlayer.stop();
+            mediaPlayer.pause();
         }
     }
 

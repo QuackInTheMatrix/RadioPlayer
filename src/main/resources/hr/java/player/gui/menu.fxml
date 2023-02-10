@@ -12,7 +12,7 @@
                 <Menu mnemonicParsing="false" text="Account">
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Prijava" />
-                        <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Registracija" />
+                        <MenuItem fx:id="registracijaMenuItem" mnemonicParsing="false" onAction="#promjeniEkran" text="Registracija" />
                   <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Odjava" />
                     </items>
                 </Menu>

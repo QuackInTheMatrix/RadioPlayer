@@ -1,67 +1,59 @@
 package hr.java.player.gui;
 
-import de.sfuhrm.radiobrowser4j.SearchMode;
 import de.sfuhrm.radiobrowser4j.Station;
 import hr.java.player.baza.BazaPodataka;
-import hr.java.player.util.RadioStations;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class DodavanjeStanicaController {
+public class KorisnikUkloniStanicuController {
     @FXML
-    private ChoiceBox<String> tipPretrageChoiceBox;
-    @FXML
-    private TextField glavnaPretragaField, nazivField, zanrField, zemljaField, codecField, bitrateField;
+    private TextField nazivField, zanrField, zemljaField, codecField, bitrateField;
     @FXML
     private TableView<Station> radioTableView;
     @FXML
     private TableColumn<Station, String> nazivColumn, zanrColumn, zemljaColumn, codecColumn;
     @FXML
     private TableColumn<Station, Integer> bitrateColumn;
+    private List<Station> korisnikoveStanice = new ArrayList<>();
     @FXML
     void initialize(){
-        List<Station> stanice = RadioStations.dohvatiStanice();
+        korisnikoveStanice = BazaPodataka.dohvatiKorisnikoveStanice(GlavnaAplikacija.getKorisnik().getId(),null);
         nazivColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
         zanrColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTags()));
         zemljaColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCountry()));
         codecColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCodec()));
         bitrateColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getBitrate()).asObject());
-        radioTableView.setItems(FXCollections.observableArrayList(stanice));
+        radioTableView.setItems(FXCollections.observableArrayList(korisnikoveStanice));
     }
     @FXML
     void pretrazi() {
-        String glavnaPretraga = glavnaPretragaField.getText();
         String naziv = nazivField.getText();
         String zanr = zanrField.getText();
         String zemlja = zemljaField.getText();
         String codec = codecField.getText();
-        Integer bitrate = null;
-        SearchMode mode;
-        switch (tipPretrageChoiceBox.getSelectionModel().getSelectedItem()){
-            case "Naziv" -> mode = SearchMode.BYNAME;
-            case "Zanr" -> mode = SearchMode.BYTAG;
-            case "Zemlja" -> mode = SearchMode.BYCOUNTRY;
-            case "Codec" -> mode = SearchMode.BYCODEC;
-            default -> mode = SearchMode.BYNAME;
-        }
+        Integer bitrate;
         try{
             if (!bitrateField.getText().isEmpty()){
                 bitrate = Integer.parseInt(bitrateField.getText());
+            }else{
+                bitrate = null;
             }
-            if (glavnaPretraga.isEmpty()){
-                //TODO: napraviti alert da je potrebno upisati glavnu pretragu ukoliko su druga polja popunjena
-                radioTableView.setItems(FXCollections.observableArrayList(RadioStations.dohvatiStanice()));
-            }else {
-                radioTableView.setItems(FXCollections.observableArrayList(RadioStations.dohvatiStanice(mode, glavnaPretraga, naziv, zanr, zemlja, codec,bitrate)));
-            }
+            radioTableView.setItems(FXCollections.observableArrayList(korisnikoveStanice.stream()
+                    .filter(station -> naziv.isEmpty() || station.getName().toLowerCase().contains(naziv.toLowerCase()))
+                    .filter(station -> zanr.isEmpty() || station.getTags().toLowerCase().contains(zanr.toLowerCase()))
+                    .filter(station -> zemlja.isEmpty() || station.getCountry().toLowerCase().contains(zemlja.toLowerCase()))
+                    .filter(station -> codec.isEmpty() || station.getCodec().toLowerCase().contains(codec.toLowerCase()))
+                    .filter(station -> bitrate==null || station.getBitrate().equals(bitrate))
+                    .collect(Collectors.toList())));
         }catch (NumberFormatException ex){
             //TODO: alert umjesto sout
             System.out.println("Potrebno je unjeti broj!");
@@ -69,24 +61,14 @@ public class DodavanjeStanicaController {
         }
     }
     @FXML
-    void dodaj(){
+    void obrisi(){
         Station odabranaStanica = radioTableView.getSelectionModel().getSelectedItem();
         if (odabranaStanica!=null){
-            BazaPodataka.unesiStanicu(GlavnaAplikacija.getKorisnik().getId(), odabranaStanica);
+            BazaPodataka.obrisiStanicuKorisniku(GlavnaAplikacija.getKorisnik().getId(), odabranaStanica);
+            initialize();
         }else{
             //TODO: alert umjesto sout
-            System.out.println("Potrebno je odabrati barem jedan radio");
-        }
-    }
-    @FXML
-    void isprobaj(){
-        Station odabranaStanica=radioTableView.getSelectionModel().getSelectedItem();
-        if (odabranaStanica!=null){
-            GlavnaAplikacija.playMedia(odabranaStanica.getUrl());
-            System.out.println(odabranaStanica.getUrl());
-        }else{
-            //TODO: napraviti alert
-            System.out.println("Potrebno je odabrati stanicu!");
+            System.out.println("Potrebno je odabrati barem jednu stanicu");
         }
     }
 }

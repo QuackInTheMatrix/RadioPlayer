@@ -1,9 +1,18 @@
 package hr.java.player.gui;
 
+import de.sfuhrm.radiobrowser4j.Station;
+import hr.java.player.baza.BazaPodataka;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.media.MediaPlayer;
+
+import java.util.List;
 
 public class SlusanjeController {
     @FXML
@@ -12,28 +21,44 @@ public class SlusanjeController {
     private Slider volumeSlider;
 
     @FXML
+    private TableView<Station> radioTableView;
+    @FXML
+    private TableColumn<Station, String> nazivColumn, zanrColumn, zemljaColumn, codecColumn;
+    @FXML
+    private TableColumn<Station, Integer> bitrateColumn;
+
+    @FXML
     void initialize() {
         volumeSlider.valueProperty().addListener(((observableValue, oldValue, newValue) -> GlavnaAplikacija.changeVolume((Double) newValue)));
-        //TODO: inicijalizacija tablice
+        List<Station> korisnikoveStanice = BazaPodataka.dohvatiKorisnikoveStanice(GlavnaAplikacija.getKorisnik().getId(),null);
+        nazivColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
+        zanrColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTags()));
+        zemljaColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCountry()));
+        codecColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCodec()));
+        bitrateColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getBitrate()).asObject());
+        radioTableView.setItems(FXCollections.observableArrayList(korisnikoveStanice));
         if (GlavnaAplikacija.getStatus() == MediaPlayer.Status.PLAYING){
-            //TODO: updateaj sve podatke o radiju
+            updateInfo();
+            System.out.println("Svira!");
         }
     }
-    public void pokreniRadio(){
-        //TODO: dodati uzimanje oznacenog radija iz tableview-a
+    void updateInfo(){
 
-
-//        Station trazena = browser.listStationsBy(SearchMode.BYNAME, "Otvoreni")
-//                .limit(100)
-//                .collect(Collectors.toList()).get(0);
-//
-//        browser.listStationsBy(SearchMode.BYCOUNTRY, "Croatia").forEach(station -> System.out.println(station.getName() + " " + station.getUrl()+" "+station.getBitrate()));
-
-        GlavnaAplikacija.playMedia("stanice/antena.pls");
-        //TODO: updateati podatke o radiju koji svira
+    }
+    @FXML
+    void pokreniRadio(){
+        Station odabranaStanica=radioTableView.getSelectionModel().getSelectedItem();
+        if (odabranaStanica!=null){
+            GlavnaAplikacija.playMedia(odabranaStanica.getUrl());
+            System.out.println(odabranaStanica.getUrl());
+            updateInfo();
+        }else{
+            //TODO: napraviti alert
+            System.out.println("Potrebno je odabrati stanicu!");
+        }
     }
 
     public void pauzirajRadio(){
-        GlavnaAplikacija.stopMedia();
+        GlavnaAplikacija.pauseMedia();
     }
 }

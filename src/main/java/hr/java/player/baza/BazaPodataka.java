@@ -9,7 +9,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 public class BazaPodataka{
     private static final String DATABASE_FILE = "dat/database.properties";
@@ -23,35 +22,37 @@ public class BazaPodataka{
         String lozinka = svojstva.getProperty("lozinka");
         return DriverManager.getConnection(urlBazePodataka, korisnickoIme,lozinka);
     }
-    public static List<Station> dohvatiStranice(Long id, String naziv, String zemlja, String codec, Integer bitrate, String zanr, String url){
+    public static List<Station> dohvatiStanice(Long id, String naziv, String zemlja, String codec, Integer bitrate, String zanr, String url){
         List<Station> dohvaceneStanice = new ArrayList<>();
         try(Connection veza = connectToDatabase()){
             List<String> uvjeti = new ArrayList<>();
             Statement statement = veza.createStatement();
             ResultSet rs;
-            String query = "SELECT * FROM stanice";
+            String query = "SELECT * FROM stations";
             if (id!=null){
                 uvjeti.add("id="+id);
             }
             if (!naziv.isEmpty()){
-                uvjeti.add("naziv LIKE %"+naziv+"%");
+                uvjeti.add("naziv LIKE '%"+naziv+"%'");
             }
             if (!zemlja.isEmpty()){
-                uvjeti.add("zemlja LIKE %"+zemlja+"%");
+                uvjeti.add("zemlja LIKE '%"+zemlja+"%'");
             }
             if (!codec.isEmpty()){
-                uvjeti.add("codec LIKE %"+codec+"%");
+                uvjeti.add("codec LIKE '%"+codec+"%'");
             }
             if (bitrate!=null){
                 uvjeti.add("bitrate="+bitrate);
             }
             if (!zanr.isEmpty()){
-                uvjeti.add("zanrovi LIKE %"+zanr+"%");
+                uvjeti.add("zanrovi LIKE '%"+zanr+"%'");
             }
-            if (url!=null){
-                uvjeti.add("url LIKE %"+url+"%");
+            if (!url.isEmpty()){
+                uvjeti.add("url LIKE '%"+url+"%'");
             }
-            query+=String.join(" and ",uvjeti);
+            if (uvjeti.size()>0) {
+                query += " where "+String.join(" and ", uvjeti);
+            }
             rs = statement.executeQuery(query);
             while (rs.next()){
                 Long idEntiteta = rs.getLong("id");
@@ -78,19 +79,24 @@ public class BazaPodataka{
         return dohvaceneStanice;
     }
     public static void unesiStanicu(Station stanica){
-        try(Connection veza = connectToDatabase()){
-            PreparedStatement preparedStatement = veza.prepareStatement("INSERT INTO stations (naziv,zemlja,codec,bitrate,zanrovi,url) VALUES (?,?,?,?,?,?)");
-            preparedStatement.setString(1,stanica.getName());
-            preparedStatement.setString(2,stanica.getCountry());
-            preparedStatement.setString(3,stanica.getCodec());
-            preparedStatement.setInt(4,stanica.getBitrate());
-            preparedStatement.setString(5,stanica.getTags());
-            preparedStatement.setString(6, stanica.getUrl());
-            preparedStatement.executeUpdate();
-        }catch (SQLException | IOException ex){
+        if (dohvatiStanice(null,"","","",null, "",stanica.getUrl()).size()!=0){
             //TODO: alert umjesto sout
-            System.out.println("Greska pri radu s bazom.");
-            ex.printStackTrace();
+            System.out.println("Radio stanica vec postoji u bazi!");
+        }else{
+            try(Connection veza = connectToDatabase()){
+                PreparedStatement preparedStatement = veza.prepareStatement("INSERT INTO stations (naziv,zemlja,codec,bitrate,zanrovi,url) VALUES (?,?,?,?,?,?)");
+                preparedStatement.setString(1,stanica.getName());
+                preparedStatement.setString(2,stanica.getCountry());
+                preparedStatement.setString(3,stanica.getCodec());
+                preparedStatement.setInt(4,stanica.getBitrate());
+                preparedStatement.setString(5,stanica.getTags());
+                preparedStatement.setString(6, stanica.getUrl());
+                preparedStatement.executeUpdate();
+            }catch (SQLException | IOException ex){
+                //TODO: alert umjesto sout
+                System.out.println("Greska pri radu s bazom.");
+                ex.printStackTrace();
+            }
         }
     }
 }

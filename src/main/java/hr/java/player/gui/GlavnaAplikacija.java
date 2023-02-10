@@ -12,7 +12,6 @@ import java.io.IOException;
 
 public class GlavnaAplikacija extends Application {
     private static Stage mainStage;
-    private static Media media;
     private static MediaPlayer mediaPlayer;
     private static Double currentVolume=0.1;
     @Override
@@ -25,6 +24,13 @@ public class GlavnaAplikacija extends Application {
         stage.show();
     }
 
+    public static MediaPlayer.Status getStatus(){
+        if (mediaPlayer!=null){
+            return mediaPlayer.getStatus();
+        }
+        return MediaPlayer.Status.UNKNOWN;
+    }
+
     public static void changeVolume(Double newVolume){
         currentVolume=newVolume/100.0;
         if (mediaPlayer!=null){
@@ -33,20 +39,25 @@ public class GlavnaAplikacija extends Application {
     }
 
     public static void playMedia(String url){
-        media = new Media(url);
+        if (mediaPlayer!=null){
+            mediaPlayer.stop();
+            mediaPlayer.dispose();
+        }
+        Media media = new Media(url);
         mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         mediaPlayer.setVolume(currentVolume);
         mediaPlayer.play();
     }
 
     public static void PlayMedia(){
-        if (media!=null && mediaPlayer!=null){
+        if (mediaPlayer!=null){
             mediaPlayer.play();
         }
     }
 
     public static void stopMedia(){
-        if (media!=null && mediaPlayer!=null) {
+        if (mediaPlayer!=null) {
             mediaPlayer.stop();
         }
     }
@@ -55,14 +66,6 @@ public class GlavnaAplikacija extends Application {
         Scene scene = new Scene(root,600,500);
         mainStage.setScene(scene);
         mainStage.show();
-    }
-
-    public static boolean isPlaying(){
-        if (mediaPlayer!=null && mediaPlayer.getStatus().equals(MediaPlayer.Status.PLAYING)){
-            return true;
-        }else{
-            return false;
-        }
     }
 
     public static void main(String[] args) {

@@ -77,4 +77,15 @@ public class DodavanjeStanicaController {
             System.out.println("Potrebno je odabrati barem jedan radio");
         }
     }
+    @FXML
+    void isprobaj(){
+        Station odabranaStanica=radioTableView.getSelectionModel().getSelectedItem();
+        if (odabranaStanica!=null){
+            GlavnaAplikacija.playMedia(odabranaStanica.getUrl());
+            System.out.println(odabranaStanica.getUrl());
+        }else{
+            //TODO: napraviti alert
+            System.out.println("Potrebno je odabrati stanicu!");
+        }
+    }
 }

@@ -3,6 +3,7 @@ package hr.java.player.gui;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.media.MediaPlayer;
 
 public class SlusanjeController {
     @FXML
@@ -14,7 +15,7 @@ public class SlusanjeController {
     void initialize() {
         volumeSlider.valueProperty().addListener(((observableValue, oldValue, newValue) -> GlavnaAplikacija.changeVolume((Double) newValue)));
         //TODO: inicijalizacija tablice
-        if (GlavnaAplikacija.isPlaying()){
+        if (GlavnaAplikacija.getStatus() == MediaPlayer.Status.PLAYING){
             //TODO: updateaj sve podatke o radiju
         }
     }
@@ -28,7 +29,7 @@ public class SlusanjeController {
 //
 //        browser.listStationsBy(SearchMode.BYCOUNTRY, "Croatia").forEach(station -> System.out.println(station.getName() + " " + station.getUrl()+" "+station.getBitrate()));
 
-        GlavnaAplikacija.playMedia("http://21223.live.streamtheworld.com/PROGRAM2.mp3");
+        GlavnaAplikacija.playMedia("stanice/antena.pls");
         //TODO: updateati podatke o radiju koji svira
     }
 

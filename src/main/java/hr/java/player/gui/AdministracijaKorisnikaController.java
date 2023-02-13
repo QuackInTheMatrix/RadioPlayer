@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public final class AdministrirajuciKorisnikaController implements Administrirajuci {
+public final class AdministracijaKorisnikaController implements Administrirajuci {
     @FXML
     private TextField usernameField, imeField, prezimeField, emailField;
     @FXML
@@ -45,6 +45,11 @@ public final class AdministrirajuciKorisnikaController implements Administriraju
         korisnikTableView.setItems(FXCollections.observableArrayList(korisnici));
         razinaOvlastiChoiceBox.setItems(FXCollections.observableArrayList(RazinaOvlasti.values()));
         razinaOvlastiChoiceBox.getItems().add(null);
+        usernameField.clear();
+        imeField.clear();
+        passwordField.clear();
+        prezimeField.clear();
+        emailField.clear();
     }
     @FXML
     void unesi(){
@@ -131,51 +136,61 @@ public final class AdministrirajuciKorisnikaController implements Administriraju
                     System.out.println("Potrebno je unjeti unikatan novu username");
                 }
             }
-            if (ispravan){
+            if (ispravan) {
                 Korisnik odabraniKorisnik = korisnikTableView.getSelectionModel().getSelectedItem();
-                try {
-                    BazaPodataka.promjeniKorisnika(odabraniKorisnik.getId(),username,email,ime,prezime,passwordHash,razinaOvlasti);
-                } catch (BazaPodatakaException e) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Greska");
-                    alert.setHeaderText("Dogodila se greska pri radu s bazom");
-                    alert.setContentText(e.getMessage());
-                    alert.showAndWait();
-                    Logging.logger.error(e.getMessage(),e);
-                }
-                if (passwordHash!=null){
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Promjena korisnika");
+                alert.setHeaderText("Zelite li promjeniti korisnika?");
+                alert.setContentText("Jeste li sigurni da zelite promjeniti korisnika +"+odabraniKorisnik.getUsername());
+                ButtonType daButton = new ButtonType("Da");
+                ButtonType neButton = new ButtonType("Ne");
+                alert.getButtonTypes().setAll(daButton, neButton);
+                Optional<ButtonType> odabraniButton = alert.showAndWait();
+                if (odabraniButton.get()==daButton) {
                     try {
-                        DatotekaKorisnika.promjeniPassword(new BaseUser(odabraniKorisnik.getUsername(),passwordHash));
-                    } catch (DatotekaException ex) {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Greska");
-                        alert.setHeaderText("Dogodila se greska pri radu sa datotekom");
-                        alert.setContentText(ex.getMessage());
-                        alert.showAndWait();
-                        Logging.logger.error(ex.getMessage(),ex);
+                        BazaPodataka.promjeniKorisnika(odabraniKorisnik.getId(), username, email, ime, prezime, passwordHash, razinaOvlasti);
+                    } catch (BazaPodatakaException e) {
+                        Alert alertB = new Alert(Alert.AlertType.ERROR);
+                        alertB.setTitle("Greska");
+                        alertB.setHeaderText("Dogodila se greska pri radu s bazom");
+                        alertB.setContentText(e.getMessage());
+                        alertB.showAndWait();
+                        Logging.logger.error(e.getMessage(), e);
                     }
-                }
-                if (!username.isEmpty()){
-                    try {
-                        DatotekaKorisnika.promjeniUsername(odabraniKorisnik.getUsername(),username);
-                    } catch (DatotekaException ex) {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Greska");
-                        alert.setHeaderText("Dogodila se greska pri radu sa datotekom");
-                        alert.setContentText(ex.getMessage());
-                        alert.showAndWait();
-                        Logging.logger.error(ex.getMessage(),ex);
+                    if (passwordHash != null) {
+                        try {
+                            DatotekaKorisnika.promjeniPassword(new BaseUser(odabraniKorisnik.getUsername(), passwordHash));
+                        } catch (DatotekaException ex) {
+                            Alert alertD = new Alert(Alert.AlertType.ERROR);
+                            alertD.setTitle("Greska");
+                            alertD.setHeaderText("Dogodila se greska pri radu sa datotekom");
+                            alertD.setContentText(ex.getMessage());
+                            alertD.showAndWait();
+                            Logging.logger.error(ex.getMessage(), ex);
+                        }
                     }
-                }
-                if (GlavnaAplikacija.getKorisnik().getId().equals(odabraniKorisnik.getId())){
-                    if (!username.isEmpty()){
-                        GlavnaAplikacija.prijaviKorisnika(username);
-                    }else{
-                        GlavnaAplikacija.prijaviKorisnika(odabraniKorisnik.getUsername());
+                    if (!username.isEmpty()) {
+                        try {
+                            DatotekaKorisnika.promjeniUsername(odabraniKorisnik.getUsername(), username);
+                        } catch (DatotekaException ex) {
+                            Alert alertDD = new Alert(Alert.AlertType.ERROR);
+                            alertDD.setTitle("Greska");
+                            alertDD.setHeaderText("Dogodila se greska pri radu sa datotekom");
+                            alertDD.setContentText(ex.getMessage());
+                            alertDD.showAndWait();
+                            Logging.logger.error(ex.getMessage(), ex);
+                        }
                     }
+                    if (GlavnaAplikacija.getKorisnik().getId().equals(odabraniKorisnik.getId())) {
+                        if (!username.isEmpty()) {
+                            GlavnaAplikacija.prijaviKorisnika(username);
+                        } else {
+                            GlavnaAplikacija.prijaviKorisnika(odabraniKorisnik.getUsername());
+                        }
+                    }
+                    korisnikTableView.getSelectionModel().clearSelection();
+                    initialize();
                 }
-                korisnikTableView.getSelectionModel().clearSelection();
-                initialize();
             }
         }else{
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -228,12 +243,12 @@ public final class AdministrirajuciKorisnikaController implements Administriraju
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Brisanje korisnika");
                 alert.setHeaderText("Zelite li obrisati korisnika?");
-                alert.setContentText("Jeste li sigurni da zelite obrisati korisnika +"+odabraniKorisnik.getUsername());
-                ButtonType yesButton = new ButtonType("Yes");
-                ButtonType noButton = new ButtonType("No");
-                alert.getButtonTypes().setAll(yesButton, noButton);
+                alert.setContentText("Jeste li sigurni da zelite obrisati korisnika "+odabraniKorisnik.getUsername());
+                ButtonType daButton = new ButtonType("Da");
+                ButtonType neButton = new ButtonType("Ne");
+                alert.getButtonTypes().setAll(daButton, neButton);
                 Optional<ButtonType> odabraniButton = alert.showAndWait();
-                if (odabraniButton.get()==yesButton) {
+                if (odabraniButton.get()==daButton) {
                     try {
                         BazaPodataka.obrisiKorisnika(odabraniKorisnik.getId(), "", "", "", "", null, null);
                         DatotekaKorisnika.obrisiKorisnika(odabraniKorisnik.getUsername());

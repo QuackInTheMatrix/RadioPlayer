@@ -46,13 +46,6 @@ public class GlavnaAplikacija extends Application {
 
     public static void prijaviKorisnika(String username){
         prijavljeniKorisnik = BazaPodataka.dohvatiKorisnike(null,username,"","","",null,null).get(0);
-        //TODO: alert sa obavjesti da je prijava izvrsena uspjesno
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Uspjesna prijava!");
-        alert.setHeaderText("Uspjesno ste se prijavili");
-        alert.setContentText("Dobrodosli "+prijavljeniKorisnik.getIme()+".\n " +
-                "Radio mozete poceti slusati klikom na menu Radio->Dodaj gdje mozete isporobati i dodati radio u favorite koji ce se prikazivati na stranici Radio->Slusaj.");
-        alert.showAndWait();
     }
 
     public static void odjaviKorisnika(){

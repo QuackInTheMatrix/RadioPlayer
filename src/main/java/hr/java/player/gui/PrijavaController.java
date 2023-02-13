@@ -70,6 +70,12 @@ public class PrijavaController {
             try {
                 BorderPane root = FXMLLoader.load(getClass().getResource("prijava.fxml"));
                 GlavnaAplikacija.setNewStage(root);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Uspjesna prijava!");
+                alert.setHeaderText("Uspjesno ste se prijavili");
+                alert.setContentText("Dobrodosli "+GlavnaAplikacija.getKorisnik().getIme()+".\n " +
+                        "Radio mozete poceti slusati klikom na menu Radio->Dodaj gdje mozete isporobati i dodati radio u favorite koji ce se prikazivati na stranici Radio->Slusaj.");
+                alert.showAndWait();
             } catch (IOException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Greska");

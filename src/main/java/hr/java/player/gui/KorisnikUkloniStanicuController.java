@@ -8,12 +8,11 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class KorisnikUkloniStanicuController implements Pretrazljiv{
     @FXML
@@ -62,16 +61,27 @@ public class KorisnikUkloniStanicuController implements Pretrazljiv{
     void obrisi(){
         Station odabranaStanica = radioTableView.getSelectionModel().getSelectedItem();
         if (odabranaStanica!=null){
-            try {
-                BazaPodataka.obrisiStanicuKorisniku(GlavnaAplikacija.getKorisnik().getId(), odabranaStanica);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Brisanje stanice");
+            alert.setHeaderText("Zelite li obrisati stanicu?");
+            alert.setContentText("Jeste li sigurni da zelite obrisati stanicu "+odabranaStanica.getName()+" ?");
+            ButtonType daButton = new ButtonType("Da");
+            ButtonType neButton = new ButtonType("Ne");
+            alert.getButtonTypes().setAll(daButton, neButton);
+            Optional<ButtonType> odabraniButton = alert.showAndWait();
+            if (odabraniButton.get()==daButton) {
+                try {
+                    BazaPodataka.obrisiStanicuKorisniku(GlavnaAplikacija.getKorisnik().getId(), odabranaStanica);
+                    initialize();
+                } catch (BazaPodatakaException e) {
+                    Alert alertB = new Alert(Alert.AlertType.ERROR);
+                    alertB.setTitle("Greska");
+                    alertB.setHeaderText("Dogodila se greska pri radu s bazom");
+                    alertB.setContentText(e.getMessage());
+                    alertB.showAndWait();
+                    Logging.logger.error(e.getMessage(), e);
+                }
                 initialize();
-            } catch (BazaPodatakaException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Greska");
-                alert.setHeaderText("Dogodila se greska pri radu s bazom");
-                alert.setContentText(e.getMessage());
-                alert.showAndWait();
-                Logging.logger.error(e.getMessage(),e);
             }
         }else{
             Alert alert = new Alert(Alert.AlertType.INFORMATION);

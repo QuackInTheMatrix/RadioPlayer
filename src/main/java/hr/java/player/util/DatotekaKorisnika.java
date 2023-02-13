@@ -37,6 +37,24 @@ public class DatotekaKorisnika {
             ex.printStackTrace();
         }
     }
+    public static void obrisiKorisnika(String username){
+        try (BufferedReader in = new BufferedReader(new FileReader(PATH_KORISNIKA))) {
+            String procitaniUsername;
+            Path pathKorisnika = Path.of(PATH_KORISNIKA);
+            List<String> procitaneLinije = new ArrayList<>();
+            while ((procitaniUsername = in.readLine()) != null) {
+                if (username.equals(procitaniUsername)){
+                    in.readLine();
+                }else{
+                    procitaneLinije.add(procitaniUsername);
+                    procitaneLinije.add(in.readLine());
+                }
+            }
+            Files.write(pathKorisnika, procitaneLinije, StandardCharsets.UTF_8);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
     public static void promjeniUsername(String stariUsername, String noviUsername){
         try {
             Path pathKorisnika = Path.of(PATH_KORISNIKA);

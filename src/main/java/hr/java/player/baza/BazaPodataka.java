@@ -50,8 +50,8 @@ public class BazaPodataka{
             }
             if (uvjeti.size()>0) {
                 query += String.join(" , ", uvjeti)+" where id="+id;
+                statement.executeUpdate(query);
             }
-            statement.executeUpdate(query);
         }catch (SQLException | IOException ex){
             //TODO: alert umjesto sout
             System.out.println("Greska pri radu s bazom");
@@ -133,8 +133,28 @@ public class BazaPodataka{
         }
     }
 
+    public static void obrisiKorisnika(Long id, String username, String email, String ime, String prezime, Integer passwordHash, RazinaOvlasti razinaOvlasti){
+        try(Connection veza = connectToDatabase()){
+            List<Korisnik> korisniciZaBrisanje = dohvatiKorisnike(id,username,email,ime,prezime,passwordHash,razinaOvlasti);
+            for (Korisnik korisnik:korisniciZaBrisanje) {
+                System.out.println("id korisnika:"+korisnik.getId());
+                obrisiStanicuKorisniku(korisnik.getId(),null);
+                PreparedStatement preparedStatement = veza.prepareStatement("DELETE FROM korisnici WHERE id=?");
+                preparedStatement.setLong(1,korisnik.getId());
+                preparedStatement.executeUpdate();
+            }
+        }catch (SQLException | IOException ex){
+            //TODO: alert umjesto sout
+            System.out.println("Greska pri radu s bazom");
+            ex.printStackTrace();
+        }
+    }
+
     public static void obrisiStanicuKorisniku(Long idKorisnika, Station stanica){
-        Long idStanice = dohvatiStanice(null,"","","",null,"", stanica.getUrl()).get(0).getId();
+        Long idStanice=null;
+        if (stanica!=null) {
+             idStanice = dohvatiStanice(null, "", "", "", null, "", stanica.getUrl()).get(0).getId();
+        }
         try(Connection veza = connectToDatabase()){
             List<String> uvjeti = new ArrayList<>();
             Statement statement = veza.createStatement();
@@ -187,7 +207,7 @@ public class BazaPodataka{
         }
         return dohvaceneStanice;
     }
-    private static List<Stanica> dohvatiStanice(Long id, String naziv, String zemlja, String codec, Integer bitrate, String zanr, String url){
+    public static List<Stanica> dohvatiStanice(Long id, String naziv, String zemlja, String codec, Integer bitrate, String zanr, String url){
         List<Stanica> dohvaceneStanice = new ArrayList<>();
         try(Connection veza = connectToDatabase()){
             List<String> uvjeti = new ArrayList<>();
@@ -257,19 +277,71 @@ public class BazaPodataka{
                 }else{
                     System.out.println("Stanica je vec u bazi");
                 }
-                Long idStanice = dohvatiStanice(null,"","","",null,"", stanica.getUrl()).get(0).getId();
-                if (dohvatiKorisnikoveStanice(korisnikId,idStanice).isEmpty()){
-                    PreparedStatement preparedStatementKS = veza.prepareStatement("INSERT INTO korisnik_station VALUES (?,?)");
-                    preparedStatementKS.setLong(1,korisnikId);
-                    preparedStatementKS.setLong(2,idStanice);
-                    preparedStatementKS.executeUpdate();
-                }else{
-                    //TODO: umjesto sout ubaciti alert
-                    System.out.println("Stanica je vec povezana sa korisnikom!");
+                if (korisnikId!=null) {
+                    Long idStanice = dohvatiStanice(null, "", "", "", null, "", stanica.getUrl()).get(0).getId();
+                    if (dohvatiKorisnikoveStanice(korisnikId, idStanice).isEmpty()) {
+                        PreparedStatement preparedStatementKS = veza.prepareStatement("INSERT INTO korisnik_station VALUES (?,?)");
+                        preparedStatementKS.setLong(1, korisnikId);
+                        preparedStatementKS.setLong(2, idStanice);
+                        preparedStatementKS.executeUpdate();
+                    } else {
+                        //TODO: umjesto sout ubaciti alert
+                        System.out.println("Stanica je vec povezana sa korisnikom!");
+                    }
                 }
         }catch (SQLException | IOException ex){
             //TODO: alert umjesto sout
             System.out.println("Greska pri radu s bazom.");
+            ex.printStackTrace();
+        }
+    }
+    public static void obrisiStanicu(Station station){
+        try(Connection veza = connectToDatabase()){
+            List<Stanica> staniceZaBrisanje = dohvatiStanice(null,station.getName(),station.getCountry(),station.getCodec(),station.getBitrate(),station.getTags(),station.getUrl());
+            for (Stanica stanica:staniceZaBrisanje) {
+                System.out.println("id stanice:"+stanica.getId());
+                obrisiStanicuKorisniku(null,stanica.getStanica());
+                PreparedStatement preparedStatement = veza.prepareStatement("DELETE FROM stations WHERE id=?");
+                preparedStatement.setLong(1,stanica.getId());
+                preparedStatement.executeUpdate();
+            }
+        }catch (SQLException | IOException ex){
+            //TODO: alert umjesto sout
+            System.out.println("Greska pri radu s bazom");
+            ex.printStackTrace();
+        }
+    }
+    public static void promjeniStanicu(Station stanica, String naziv, String zemlja, String codec, Integer bitrate, String zanr, String url){
+        Stanica trazenaStanica = dohvatiStanice(null,"","","",null,"",stanica.getUrl()).get(0);
+        try(Connection veza = connectToDatabase()){
+            List<String> uvjeti = new ArrayList<>();
+            Statement statement = veza.createStatement();
+            String query = "UPDATE STATIONS ";
+            if (!naziv.isEmpty()){
+                uvjeti.add("naziv ='"+naziv+"'");
+            }
+            if (!zemlja.isEmpty()){
+                uvjeti.add("zemlja='"+zemlja+"'");
+            }
+            if (!codec.isEmpty()){
+                uvjeti.add("codec='"+codec+"'");
+            }
+            if (bitrate!=null){
+                uvjeti.add("bitrate="+bitrate);
+            }
+            if (!zanr.isEmpty()){
+                uvjeti.add("zanrovi='"+zanr+"'");
+            }
+            if (!url.isEmpty()){
+                uvjeti.add("url='"+url+"'");
+            }
+            if (uvjeti.size()>0) {
+                query += " set "+String.join(" and ", uvjeti)+ " where id="+trazenaStanica.getId();
+                statement.executeUpdate(query);
+            }
+        }catch (SQLException | IOException ex){
+            //TODO: alert umjesto sout
+            System.out.println("Greska pri radu s bazom");
             ex.printStackTrace();
         }
     }

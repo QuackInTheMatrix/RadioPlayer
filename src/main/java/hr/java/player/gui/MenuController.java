@@ -1,8 +1,10 @@
 package hr.java.player.gui;
 
+import hr.java.player.entiteti.RazinaOvlasti;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 
@@ -12,9 +14,16 @@ public class MenuController {
     @FXML
     private MenuItem registracijaMenuItem;
     @FXML
+    private Menu administracijaMenu;
+    @FXML
     void initialize(){
         if (GlavnaAplikacija.isLoggedIn()){
             registracijaMenuItem.setText("Promjeni");
+            if (GlavnaAplikacija.getKorisnik().getRazinaOvlasti()== RazinaOvlasti.USER){
+                administracijaMenu.setVisible(false);
+            }
+        }else{
+            administracijaMenu.setVisible(false);
         }
     }
     @FXML
@@ -29,6 +38,8 @@ public class MenuController {
                 case "Dodaj" -> imeDatoteke="dodavanjeStanica";
                 case "Ukloni" -> imeDatoteke="korisnikUkloniStanicu";
                 case "Promjeni" -> imeDatoteke="promjeniKorisnika";
+                case "Korisnici" -> imeDatoteke="administracijaKorisnika";
+                case "Stanice" -> imeDatoteke="administracijaStanica";
                 default -> imeDatoteke="prijava";
             }
             if (!(imeDatoteke.equals("prijava") || imeDatoteke.equals("registracija")) && !GlavnaAplikacija.isLoggedIn()){

@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.media.MediaView?>
 <?import javafx.scene.text.Font?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hr.java.player.gui.SlusanjeController">
@@ -67,6 +68,7 @@
             <Label GridPane.columnIndex="2" GridPane.rowIndex="4" />
             <Slider fx:id="volumeSlider" blockIncrement="1.0" value="10.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <Label text="Glasnoca:" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
+            <MediaView fx:id="mediaView" fitHeight="200.0" fitWidth="200.0" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.rowSpan="2147483647" />
             </children>
             <padding>
                 <Insets bottom="20.0" top="20.0" />

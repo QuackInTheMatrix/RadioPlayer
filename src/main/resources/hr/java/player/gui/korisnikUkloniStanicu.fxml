@@ -46,9 +46,9 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
-                <Label text="Odaberi radio i dodaj ga u favorite" GridPane.columnSpan="4" GridPane.halignment="CENTER">
+                <Label text="Obrisi radio iz favorita" GridPane.columnSpan="4" GridPane.halignment="CENTER">
                     <font>
-                        <Font name="System Bold" size="16.0" />
+                        <Font name="System Bold" size="26.0" />
                     </font>
                 </Label>
                 <Label text="Naziv:" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />

@@ -11,6 +11,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 
 import java.util.List;
 
@@ -19,6 +20,9 @@ public class SlusanjeController {
     private Label trenutnaPjesmaLabel, trenutniRadioLabel, trenutnaZemljaLabel, trenutniJezikLabel, trenutniBitrateLabel;
     @FXML
     private Slider volumeSlider;
+
+    @FXML
+    private MediaView mediaView;
 
     @FXML
     private TableView<Station> radioTableView;
@@ -37,20 +41,22 @@ public class SlusanjeController {
         codecColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCodec()));
         bitrateColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getBitrate()).asObject());
         radioTableView.setItems(FXCollections.observableArrayList(korisnikoveStanice));
-        if (GlavnaAplikacija.getStatus() == MediaPlayer.Status.PLAYING){
-            updateInfo();
-            System.out.println("Svira!");
-        }
+        updateInfo();
     }
     void updateInfo(){
-
+        if (GlavnaAplikacija.getStatus().equals(MediaPlayer.Status.PLAYING)){
+            System.out.println(GlavnaAplikacija.getMedia().getMetadata());
+            System.out.println(GlavnaAplikacija.getMedia().getTracks());
+        }else{
+            //TODO: reset everything to empty
+        }
     }
     @FXML
     void pokreniRadio(){
         Station odabranaStanica=radioTableView.getSelectionModel().getSelectedItem();
         if (odabranaStanica!=null){
             GlavnaAplikacija.playMedia(odabranaStanica.getUrl());
-            System.out.println(odabranaStanica.getUrl());
+            mediaView.setMediaPlayer(GlavnaAplikacija.getMediaPlayer());
             updateInfo();
         }else{
             //TODO: napraviti alert

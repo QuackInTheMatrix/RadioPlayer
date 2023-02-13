@@ -14,9 +14,11 @@ import java.io.IOException;
 
 public class GlavnaAplikacija extends Application {
     private static Stage mainStage;
+    private static Media media;
     private static MediaPlayer mediaPlayer;
     private static Double currentVolume=0.1;
     private static Korisnik prijavljeniKorisnik;
+    //private static FFmpeg = new FFm
     @Override
     public void start(Stage stage) throws IOException {
         mainStage = stage;
@@ -35,6 +37,10 @@ public class GlavnaAplikacija extends Application {
         return prijavljeniKorisnik;
     }
 
+    public static Media getMedia(){
+        return media;
+    }
+
     public static void prijaviKorisnika(String username){
         prijavljeniKorisnik = BazaPodataka.dohvatiKorisnike(null,username,"","","",null,null).get(0);
         //TODO: alert sa obavjesti da je prijava izvrsena uspjesno
@@ -50,6 +56,9 @@ public class GlavnaAplikacija extends Application {
         }
         return MediaPlayer.Status.UNKNOWN;
     }
+    public static MediaPlayer getMediaPlayer(){
+        return mediaPlayer;
+    }
 
     public static void changeVolume(Double newVolume){
         currentVolume=newVolume/100.0;
@@ -63,7 +72,7 @@ public class GlavnaAplikacija extends Application {
             mediaPlayer.stop();
             mediaPlayer.dispose();
         }
-        Media media = new Media(url);
+        media = new Media(url);
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setVolume(currentVolume);
         mediaPlayer.play();

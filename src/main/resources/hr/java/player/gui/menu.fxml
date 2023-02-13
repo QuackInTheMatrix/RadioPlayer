@@ -21,7 +21,6 @@
                 <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Slusaj" />
                   <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Dodaj" />
                   <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Ukloni" />
-                  <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Izmjeni" />
               </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Playback">
@@ -30,10 +29,10 @@
                   <MenuItem mnemonicParsing="false" onAction="#playbackControl" text="Pauziraj" />
               </items>
             </Menu>
-            <Menu mnemonicParsing="false" text="Administracija">
+            <Menu fx:id="administracijaMenu" mnemonicParsing="false" text="Administracija">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Korisnici" />
-                  <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Promjene" />
+                  <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Stanice" />
               </items>
             </Menu>
             </menus>

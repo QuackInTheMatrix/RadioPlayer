@@ -44,7 +44,7 @@
                 </Label>
                 <Label fx:id="usernameLabel" text="Korisnicko ime:" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
                 <Label fx:id="passwordLabel" text="Lozinka:" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
-                <Button mnemonicParsing="false" onAction="#promjeni" text="Promjeni" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="10" />
+                <Button mnemonicParsing="false" onAction="#promjeni" text="Promjeni" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="7" />
                 <TextField fx:id="usernameField" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                 <PasswordField fx:id="passwordField" GridPane.columnIndex="2" GridPane.rowIndex="3" />
             <Label text="Ime:" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />

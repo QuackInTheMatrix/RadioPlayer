@@ -1,9 +1,11 @@
 package hr.java.player.gui;
 
 import hr.java.player.entiteti.RazinaOvlasti;
+import hr.java.player.util.Logging;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
@@ -44,8 +46,12 @@ public class MenuController {
             }
             if (!(imeDatoteke.equals("prijava") || imeDatoteke.equals("registracija")) && !GlavnaAplikacija.isLoggedIn()){
                 imeDatoteke="prijava";
-                //TODO: zamjeniti sout sa alertom
-                System.out.println("Prvo se potrebno prijaviti/registrirati kako bi koristili aplikaciju!");
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Nedozvoljen pristup");
+                alert.setHeaderText("Potrebna prijava");
+                alert.setContentText("Kako bi ste pristupili "+kliknuti.getText()+" prvo se potrebno prijaviti");
+                alert.showAndWait();
+                Logging.logger.info("Pokusaj brisanja stanice bez odabira stanice u tabilici");
             }
             BorderPane root = FXMLLoader.load(getClass().getResource(imeDatoteke+".fxml"));
             GlavnaAplikacija.setNewStage(root);

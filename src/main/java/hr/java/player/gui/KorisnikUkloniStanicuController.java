@@ -2,19 +2,20 @@ package hr.java.player.gui;
 
 import de.sfuhrm.radiobrowser4j.Station;
 import hr.java.player.baza.BazaPodataka;
+import hr.java.player.iznimke.BazaPodatakaException;
+import hr.java.player.util.Logging;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class KorisnikUkloniStanicuController {
+public class KorisnikUkloniStanicuController implements Pretrazljiv{
     @FXML
     private TextField nazivField, zanrField, zemljaField, codecField, bitrateField;
     @FXML
@@ -47,28 +48,38 @@ public class KorisnikUkloniStanicuController {
             }else{
                 bitrate = null;
             }
-            radioTableView.setItems(FXCollections.observableArrayList(korisnikoveStanice.stream()
-                    .filter(station -> naziv.isEmpty() || station.getName().toLowerCase().contains(naziv.toLowerCase()))
-                    .filter(station -> zanr.isEmpty() || station.getTags().toLowerCase().contains(zanr.toLowerCase()))
-                    .filter(station -> zemlja.isEmpty() || station.getCountry().toLowerCase().contains(zemlja.toLowerCase()))
-                    .filter(station -> codec.isEmpty() || station.getCodec().toLowerCase().contains(codec.toLowerCase()))
-                    .filter(station -> bitrate==null || station.getBitrate().equals(bitrate))
-                    .collect(Collectors.toList())));
-        }catch (NumberFormatException ex){
-            //TODO: alert umjesto sout
-            System.out.println("Potrebno je unjeti broj!");
-            ex.printStackTrace();
+            radioTableView.setItems(FXCollections.observableArrayList(filtrirajStanice(korisnikoveStanice,naziv,zanr,zemlja,codec,bitrate)));
+        }catch (NumberFormatException e){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Neuspjesna pretraga!");
+            alert.setHeaderText("Nije moguce pretraziti stanice");
+            alert.setContentText("Za bitrate je potrebno unjeti broj ili polje ostaviti prazno!");
+            alert.showAndWait();
+            Logging.logger.error(e.getMessage(),e);
         }
     }
     @FXML
     void obrisi(){
         Station odabranaStanica = radioTableView.getSelectionModel().getSelectedItem();
         if (odabranaStanica!=null){
-            BazaPodataka.obrisiStanicuKorisniku(GlavnaAplikacija.getKorisnik().getId(), odabranaStanica);
-            initialize();
+            try {
+                BazaPodataka.obrisiStanicuKorisniku(GlavnaAplikacija.getKorisnik().getId(), odabranaStanica);
+                initialize();
+            } catch (BazaPodatakaException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Greska");
+                alert.setHeaderText("Dogodila se greska pri radu s bazom");
+                alert.setContentText(e.getMessage());
+                alert.showAndWait();
+                Logging.logger.error(e.getMessage(),e);
+            }
         }else{
-            //TODO: alert umjesto sout
-            System.out.println("Potrebno je odabrati barem jednu stanicu");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Neuspjesno brisanje");
+            alert.setHeaderText("Nije moguce obrisati stanicu");
+            alert.setContentText("Potrebno je odabrati stanicu koju zelite obrisati!");
+            alert.showAndWait();
+            Logging.logger.info("Pokusaj brisanja stanice bez odabira stanice u tabilici");
         }
     }
 }

@@ -6,10 +6,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 
@@ -59,8 +56,11 @@ public class SlusanjeController {
             mediaView.setMediaPlayer(GlavnaAplikacija.getMediaPlayer());
             updateInfo();
         }else{
-            //TODO: napraviti alert
-            System.out.println("Potrebno je odabrati stanicu!");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Neuspjesno pustanje");
+            alert.setHeaderText("Ne postoji odabrana stanica");
+            alert.setContentText("Potrebno je odabrati stanicu iz tablice koju zelite pustiti.");
+            alert.showAndWait();
         }
     }
 

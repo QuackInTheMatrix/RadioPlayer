@@ -1,46 +1,34 @@
 package hr.java.player.entiteti;
 
-public class Korisnik {
-    String username;
-    Integer passwordHash;
-    String ime;
-    String prezime;
+public class Korisnik extends Osoba{
+    BaseUser baseUser;
     String email;
     RazinaOvlasti razinaOvlasti;
-    Long id;
 
     public Korisnik(String username, Integer passwordHash, String ime, String prezime, String email, RazinaOvlasti razinaOvlasti, Long id) {
-        this.username = username;
-        this.passwordHash = passwordHash;
+        super(id, ime, prezime);
+        this.baseUser = new BaseUser(username,passwordHash);
         this.ime = ime;
         this.prezime = prezime;
         this.email = email;
         this.razinaOvlasti = razinaOvlasti;
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getUsername() {
-        return username;
+        return baseUser.username();
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     public Integer getPasswordHash() {
-        return passwordHash;
+        return baseUser.passwordHash();
     }
 
-    public void setPasswordHash(Integer password) {
-        this.passwordHash = password;
+    public BaseUser getBaseUser() {
+        return baseUser;
+    }
+
+    public void setBaseUser(BaseUser baseUser) {
+        this.baseUser = baseUser;
     }
 
     public RazinaOvlasti getRazinaOvlasti() {
@@ -51,21 +39,6 @@ public class Korisnik {
         this.razinaOvlasti = razinaOvlasti;
     }
 
-    public String getIme() {
-        return ime;
-    }
-
-    public void setIme(String ime) {
-        this.ime = ime;
-    }
-
-    public String getPrezime() {
-        return prezime;
-    }
-
-    public void setPrezime(String prezime) {
-        this.prezime = prezime;
-    }
 
     public String getEmail() {
         return email;

@@ -4,8 +4,9 @@ import de.sfuhrm.radiobrowser4j.Station;
 import hr.java.player.entiteti.Korisnik;
 import hr.java.player.entiteti.RazinaOvlasti;
 import hr.java.player.entiteti.Stanica;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import hr.java.player.iznimke.BazaPodatakaException;
+import hr.java.player.util.Logging;
+import javafx.scene.control.Alert;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
@@ -15,7 +16,6 @@ import java.util.Properties;
 
 public class BazaPodataka{
     private static final String DATABASE_FILE = "dat/database.properties";
-    private static final Logger logger = LoggerFactory.getLogger(BazaPodataka.class);
 
     private static Connection connectToDatabase() throws SQLException, IOException {
         Properties svojstva = new Properties();
@@ -25,8 +25,11 @@ public class BazaPodataka{
         String lozinka = svojstva.getProperty("lozinka");
         return DriverManager.getConnection(urlBazePodataka, korisnickoIme,lozinka);
     }
-    public static void promjeniKorisnika(Long id,String username, String email, String ime, String prezime, Integer passwordHash, RazinaOvlasti razinaOvlasti){
+    public static void promjeniKorisnika(Long id,String username, String email, String ime, String prezime, Integer passwordHash, RazinaOvlasti razinaOvlasti)throws BazaPodatakaException{
         try(Connection veza = connectToDatabase()){
+            if (dohvatiKorisnike(id,"","","","",null,null).isEmpty()){
+                throw new BazaPodatakaException("Korisnik koji se pokusava promjeniti ne postoji u bazi");
+            }
             List<String> uvjeti = new ArrayList<>();
             Statement statement = veza.createStatement();
             String query = "UPDATE korisnici set ";
@@ -53,9 +56,12 @@ public class BazaPodataka{
                 statement.executeUpdate(query);
             }
         }catch (SQLException | IOException ex){
-            //TODO: alert umjesto sout
-            System.out.println("Greska pri radu s bazom");
-            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Greska");
+            alert.setHeaderText("Dogodila se greska.");
+            alert.setContentText("Greska pri citanju properties file-a i/ili spajanja na bazu.");
+            alert.showAndWait();
+            Logging.logger.error("Greska pri citanju properties file-a i/ili spajanja na bazu.",ex);
         }
     }
     public static List<Korisnik> dohvatiKorisnike(Long id, String username, String email, String ime, String prezime, Integer passwordHash, RazinaOvlasti razinaOvlasti){
@@ -105,16 +111,20 @@ public class BazaPodataka{
                 dohvaceniKorisnici.add(new Korisnik(usernameEntiteta,passwordHashEntiteta,imeEntiteta,prezimeEntiteta,emailEntiteta,razinaOvlastiEntiteta,idEntiteta));
             }
         }catch (SQLException | IOException ex){
-            //TODO: alert umjesto sout
-            System.out.println("Greska pri radu s bazom");
-            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Greska");
+            alert.setHeaderText("Dogodila se greska.");
+            alert.setContentText("Greska pri citanju properties file-a i/ili spajanja na bazu.");
+            alert.showAndWait();
+            Logging.logger.error("Greska pri citanju properties file-a i/ili spajanja na bazu.",ex);
         }
         return dohvaceniKorisnici;
     }
-    public static void unesiKorisnika(String username, String email, String ime, String prezime, Integer passwordHash, RazinaOvlasti razinaOvlasti){
+    public static void unesiKorisnika(String username, String email, String ime, String prezime, Integer passwordHash, RazinaOvlasti razinaOvlasti)throws BazaPodatakaException{
         if (dohvatiKorisnike(null,username,"","","",null,null).size()!=0){
             //TODO: alert umjesto sout i dodati provjeru za email koji se vec koristi
             System.out.println("Korisnik sa tim korisnickim imenom vec postoji!");
+            throw  new BazaPodatakaException("Korisnik sa tim korisnickim imenom vec postoji u bazi!");
         }else{
             try(Connection veza = connectToDatabase()){
                 PreparedStatement preparedStatement = veza.prepareStatement("INSERT INTO korisnici (username,email,ime,prezime,password_hash,razina_ovlasti) VALUES (?,?,?,?,?,?)");
@@ -126,16 +136,22 @@ public class BazaPodataka{
                 preparedStatement.setInt(6,razinaOvlasti.getRazina());
                 preparedStatement.executeUpdate();
             }catch (SQLException | IOException ex){
-                //TODO: alert umjesto sout
-                System.out.println("Greska pri radu s bazom.");
-                ex.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Greska");
+                alert.setHeaderText("Dogodila se greska.");
+                alert.setContentText("Greska pri citanju properties file-a i/ili spajanja na bazu.");
+                alert.showAndWait();
+                Logging.logger.error("Greska pri citanju properties file-a i/ili spajanja na bazu.",ex);
             }
         }
     }
 
-    public static void obrisiKorisnika(Long id, String username, String email, String ime, String prezime, Integer passwordHash, RazinaOvlasti razinaOvlasti){
+    public static void obrisiKorisnika(Long id, String username, String email, String ime, String prezime, Integer passwordHash, RazinaOvlasti razinaOvlasti)throws BazaPodatakaException{
         try(Connection veza = connectToDatabase()){
             List<Korisnik> korisniciZaBrisanje = dohvatiKorisnike(id,username,email,ime,prezime,passwordHash,razinaOvlasti);
+            if (korisniciZaBrisanje.isEmpty()){
+                throw new BazaPodatakaException("Korisnik koji se pokusava obrisati ne posotoji u bazi");
+            }
             for (Korisnik korisnik:korisniciZaBrisanje) {
                 System.out.println("id korisnika:"+korisnik.getId());
                 obrisiStanicuKorisniku(korisnik.getId(),null);
@@ -144,16 +160,22 @@ public class BazaPodataka{
                 preparedStatement.executeUpdate();
             }
         }catch (SQLException | IOException ex){
-            //TODO: alert umjesto sout
-            System.out.println("Greska pri radu s bazom");
-            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Greska");
+            alert.setHeaderText("Dogodila se greska.");
+            alert.setContentText("Greska pri citanju properties file-a i/ili spajanja na bazu.");
+            alert.showAndWait();
+            Logging.logger.error("Greska pri citanju properties file-a i/ili spajanja na bazu.",ex);
         }
     }
 
-    public static void obrisiStanicuKorisniku(Long idKorisnika, Station stanica){
+    public static void obrisiStanicuKorisniku(Long idKorisnika, Station stanica)throws BazaPodatakaException{
         Long idStanice=null;
         if (stanica!=null) {
              idStanice = dohvatiStanice(null, "", "", "", null, "", stanica.getUrl()).get(0).getId();
+             if (idStanice==null){
+                 throw new BazaPodatakaException("Stanica koja se pokusava izbrisati ne postoji u bazi!");
+             }
         }
         try(Connection veza = connectToDatabase()){
             List<String> uvjeti = new ArrayList<>();
@@ -170,9 +192,12 @@ public class BazaPodataka{
                 statement.executeUpdate(query);
             }
         }catch (SQLException | IOException ex){
-            //TODO: alert umjesto sout
-            System.out.println("Greska pri radu s bazom");
-            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Greska");
+            alert.setHeaderText("Dogodila se greska.");
+            alert.setContentText("Greska pri citanju properties file-a i/ili spajanja na bazu.");
+            alert.showAndWait();
+            Logging.logger.error("Greska pri citanju properties file-a i/ili spajanja na bazu.",ex);
         }
     }
 
@@ -201,9 +226,12 @@ public class BazaPodataka{
                 dohvaceneStanice.add(dohvatiStanice(id,"","","",null,"","").get(0).getStanica());
             }
         }catch (SQLException | IOException ex){
-            //TODO: alert umjesto sout
-            System.out.println("Greska pri radu s bazom");
-            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Greska");
+            alert.setHeaderText("Dogodila se greska.");
+            alert.setContentText("Greska pri citanju properties file-a i/ili spajanja na bazu.");
+            alert.showAndWait();
+            Logging.logger.error("Greska pri citanju properties file-a i/ili spajanja na bazu.",ex);
         }
         return dohvaceneStanice;
     }
@@ -247,23 +275,25 @@ public class BazaPodataka{
                 Integer bitrateEntiteta = rs.getInt("bitrate");
                 String zanroviEntiteta = rs.getString("zanrovi");
                 String urlEntiteta = rs.getString("url");
-                Station novaStanica = new Station();
-                novaStanica.setName(nazivEntiteta);
-                novaStanica.setCountry(zemljaEntiteta);
-                novaStanica.setCodec(codecEntiteta);
-                novaStanica.setBitrate(bitrateEntiteta);
-                novaStanica.setTags(zanroviEntiteta);
-                novaStanica.setUrl(urlEntiteta);
-                dohvaceneStanice.add(new Stanica(idEntiteta,novaStanica));
+                dohvaceneStanice.add(new Stanica.Builder(idEntiteta,urlEntiteta)
+                        .withNaziv(nazivEntiteta)
+                        .withZemlja(zemljaEntiteta)
+                        .withCodec(codecEntiteta)
+                        .withBitrate(bitrateEntiteta)
+                        .withTags(zanroviEntiteta)
+                        .build());
             }
         }catch (SQLException | IOException ex){
-            //TODO: alert umjesto sout
-            System.out.println("Greska pri radu s bazom");
-            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Greska");
+            alert.setHeaderText("Dogodila se greska.");
+            alert.setContentText("Greska pri citanju properties file-a i/ili spajanja na bazu.");
+            alert.showAndWait();
+            Logging.logger.error("Greska pri citanju properties file-a i/ili spajanja na bazu.",ex);
         }
         return dohvaceneStanice;
     }
-    public static void unesiStanicu(Long korisnikId,Station stanica){
+    public static void unesiStanicu(Long korisnikId,Station stanica)throws BazaPodatakaException{
         try(Connection veza = connectToDatabase()){
                 if (dohvatiStanice(null,"","","",null,"", stanica.getUrl()).isEmpty()) {
                     PreparedStatement preparedStatement = veza.prepareStatement("INSERT INTO stations (naziv,zemlja,codec,bitrate,zanrovi,url) VALUES (?,?,?,?,?,?)");
@@ -275,7 +305,9 @@ public class BazaPodataka{
                     preparedStatement.setString(6, stanica.getUrl());
                     preparedStatement.executeUpdate();
                 }else{
+                    //TODO: alert
                     System.out.println("Stanica je vec u bazi");
+                    throw new BazaPodatakaException("Stanica vec postoji u bazi");
                 }
                 if (korisnikId!=null) {
                     Long idStanice = dohvatiStanice(null, "", "", "", null, "", stanica.getUrl()).get(0).getId();
@@ -284,20 +316,23 @@ public class BazaPodataka{
                         preparedStatementKS.setLong(1, korisnikId);
                         preparedStatementKS.setLong(2, idStanice);
                         preparedStatementKS.executeUpdate();
-                    } else {
-                        //TODO: umjesto sout ubaciti alert
-                        System.out.println("Stanica je vec povezana sa korisnikom!");
                     }
                 }
         }catch (SQLException | IOException ex){
-            //TODO: alert umjesto sout
-            System.out.println("Greska pri radu s bazom.");
-            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Greska");
+            alert.setHeaderText("Dogodila se greska.");
+            alert.setContentText("Greska pri citanju properties file-a i/ili spajanja na bazu.");
+            alert.showAndWait();
+            Logging.logger.error("Greska pri citanju properties file-a i/ili spajanja na bazu.",ex);
         }
     }
-    public static void obrisiStanicu(Station station){
+    public static void obrisiStanicu(Station station)throws BazaPodatakaException{
         try(Connection veza = connectToDatabase()){
             List<Stanica> staniceZaBrisanje = dohvatiStanice(null,station.getName(),station.getCountry(),station.getCodec(),station.getBitrate(),station.getTags(),station.getUrl());
+            if (staniceZaBrisanje.isEmpty()){
+                throw new BazaPodatakaException("Stanica koja se pokusava obrisati ne postoji u bazi!");
+            }
             for (Stanica stanica:staniceZaBrisanje) {
                 System.out.println("id stanice:"+stanica.getId());
                 obrisiStanicuKorisniku(null,stanica.getStanica());
@@ -306,14 +341,20 @@ public class BazaPodataka{
                 preparedStatement.executeUpdate();
             }
         }catch (SQLException | IOException ex){
-            //TODO: alert umjesto sout
-            System.out.println("Greska pri radu s bazom");
-            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Greska");
+            alert.setHeaderText("Dogodila se greska.");
+            alert.setContentText("Greska pri citanju properties file-a i/ili spajanja na bazu.");
+            alert.showAndWait();
+            Logging.logger.error("Greska pri citanju properties file-a i/ili spajanja na bazu.",ex);
         }
     }
-    public static void promjeniStanicu(Station stanica, String naziv, String zemlja, String codec, Integer bitrate, String zanr, String url){
+    public static void promjeniStanicu(Station stanica, String naziv, String zemlja, String codec, Integer bitrate, String zanr, String url)throws BazaPodatakaException{
         Stanica trazenaStanica = dohvatiStanice(null,"","","",null,"",stanica.getUrl()).get(0);
         try(Connection veza = connectToDatabase()){
+            if (dohvatiStanice(null,"","","",null,"",stanica.getUrl()).isEmpty()){
+                throw new BazaPodatakaException("Stanica koja se pokusava promjeniti ne postoji u bazi!");
+            }
             List<String> uvjeti = new ArrayList<>();
             Statement statement = veza.createStatement();
             String query = "UPDATE STATIONS ";
@@ -340,9 +381,12 @@ public class BazaPodataka{
                 statement.executeUpdate(query);
             }
         }catch (SQLException | IOException ex){
-            //TODO: alert umjesto sout
-            System.out.println("Greska pri radu s bazom");
-            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Greska");
+            alert.setHeaderText("Dogodila se greska.");
+            alert.setContentText("Greska pri citanju properties file-a i/ili spajanja na bazu.");
+            alert.showAndWait();
+            Logging.logger.error("Greska pri citanju properties file-a i/ili spajanja na bazu.",ex);
         }
     }
 }

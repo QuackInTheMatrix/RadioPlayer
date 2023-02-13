@@ -5,10 +5,12 @@ import hr.java.player.entiteti.Korisnik;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 
@@ -18,6 +20,7 @@ public class GlavnaAplikacija extends Application {
     private static MediaPlayer mediaPlayer;
     private static Double currentVolume=0.1;
     private static Korisnik prijavljeniKorisnik;
+    private static Duration lastKnowDuration;
     //private static FFmpeg = new FFm
     @Override
     public void start(Stage stage) throws IOException {
@@ -44,10 +47,25 @@ public class GlavnaAplikacija extends Application {
     public static void prijaviKorisnika(String username){
         prijavljeniKorisnik = BazaPodataka.dohvatiKorisnike(null,username,"","","",null,null).get(0);
         //TODO: alert sa obavjesti da je prijava izvrsena uspjesno
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Uspjesna prijava!");
+        alert.setHeaderText("Uspjesno ste se prijavili");
+        alert.setContentText("Dobrodosli "+prijavljeniKorisnik.getIme()+".\n " +
+                "Radio mozete poceti slusati klikom na menu Radio->Dodaj gdje mozete isporobati i dodati radio u favorite koji ce se prikazivati na stranici Radio->Slusaj.");
+        alert.showAndWait();
     }
 
     public static void odjaviKorisnika(){
         prijavljeniKorisnik=null;
+    }
+    public static void fixPlayback(){
+        if (mediaPlayer!=null && mediaPlayer.getStatus().equals(MediaPlayer.Status.PLAYING) && mediaPlayer.getCurrentTime().equals(lastKnowDuration)){
+            mediaPlayer.stop();
+            mediaPlayer.dispose();
+            mediaPlayer=new MediaPlayer(media);
+            mediaPlayer.play();
+        }
+        lastKnowDuration=mediaPlayer.getCurrentTime();
     }
 
     public static MediaPlayer.Status getStatus(){
@@ -64,6 +82,10 @@ public class GlavnaAplikacija extends Application {
         currentVolume=newVolume/100.0;
         if (mediaPlayer!=null){
             mediaPlayer.setVolume(currentVolume);
+            //TODO: maknuti nakon testiranja
+            System.out.println("Current time:"+mediaPlayer.getCurrentTime());
+            System.out.println("Stop time:"+mediaPlayer.getStopTime());
+            //fixPlayback();
         }
     }
 
@@ -71,6 +93,7 @@ public class GlavnaAplikacija extends Application {
         if (mediaPlayer!=null){
             mediaPlayer.stop();
             mediaPlayer.dispose();
+            mediaPlayer.onEndOfMediaProperty().unbind();
         }
         media = new Media(url);
         mediaPlayer = new MediaPlayer(media);

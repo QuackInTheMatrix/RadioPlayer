@@ -2,17 +2,27 @@ package hr.java.player.gui;
 
 import hr.java.player.baza.BazaPodataka;
 import hr.java.player.entiteti.Korisnik;
+import hr.java.player.entiteti.Promjena;
+import hr.java.player.entiteti.Promjene;
+import hr.java.player.iznimke.SerijalizacijaException;
+import hr.java.player.threadovi.DohvatiTitle;
+import hr.java.player.threadovi.UpdateTitle;
+import hr.java.player.util.Serijazilacija;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class GlavnaAplikacija extends Application {
     private static Stage mainStage;
@@ -21,15 +31,35 @@ public class GlavnaAplikacija extends Application {
     private static Double currentVolume=0.1;
     private static Korisnik prijavljeniKorisnik;
     private static Duration lastKnowDuration;
-    //private static FFmpeg = new FFm
+    private static Promjene svePromjene;
+    private static String dohvaceniTitle;
     @Override
     public void start(Stage stage) throws IOException {
         mainStage = stage;
         FXMLLoader fxmlLoader = new FXMLLoader(GlavnaAplikacija.class.getResource("pocetna.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 500);
-        stage.setTitle("Radio player");
+        setTitle("Radio Player");
         stage.setScene(scene);
         stage.show();
+        try {
+            svePromjene=Serijazilacija.deserijaliziraj();
+        }catch (SerijalizacijaException ex){
+            svePromjene = new Promjene(new ArrayList<>());
+        }
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        executorService.execute(new DohvatiTitle());
+        executorService.shutdown();
+        Timeline promjeniTitle = new Timeline(new KeyFrame(Duration.seconds(1), event -> Platform.runLater(new UpdateTitle(getTitle(),dohvaceniTitle))));
+        promjeniTitle.setCycleCount(Timeline.INDEFINITE);
+        promjeniTitle.play();
+    }
+    public static void dodajPromjenu(Promjena promjena){
+        svePromjene.addPromjena(promjena);
+        Serijazilacija.serijaliziraj(svePromjene);
+    }
+
+    public static Promjene getSvePromjene(){
+        return svePromjene;
     }
 
     public static boolean isLoggedIn(){
@@ -75,10 +105,6 @@ public class GlavnaAplikacija extends Application {
         currentVolume=newVolume/100.0;
         if (mediaPlayer!=null){
             mediaPlayer.setVolume(currentVolume);
-            //TODO: maknuti nakon testiranja
-            System.out.println("Current time:"+mediaPlayer.getCurrentTime());
-            System.out.println("Stop time:"+mediaPlayer.getStopTime());
-            //fixPlayback();
         }
     }
 
@@ -110,6 +136,23 @@ public class GlavnaAplikacija extends Application {
         Scene scene = new Scene(root,600,500);
         mainStage.setScene(scene);
         mainStage.show();
+    }
+
+    public static void setDohvaceniTitle(String dohvaceniTitle) {
+        GlavnaAplikacija.dohvaceniTitle = dohvaceniTitle;
+    }
+
+    public static void setTitle(String newTitle){
+        dohvaceniTitle =newTitle;
+        mainStage.setTitle(dohvaceniTitle);
+    }
+
+    public static String getDohvaceniTitle() {
+        return dohvaceniTitle;
+    }
+
+    public static String getTitle() {
+        return mainStage.getTitle();
     }
 
     public static void main(String[] args) {

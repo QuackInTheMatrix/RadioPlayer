@@ -1,6 +1,8 @@
 package hr.java.player.entiteti;
 
-public class Entitet {
+import java.io.Serializable;
+
+public abstract class Entitet implements Serializable {
     Long id;
 
     public Entitet(Long id) {

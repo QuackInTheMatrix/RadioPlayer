@@ -7,6 +7,7 @@ module hr.java.player.gui {
     requires tornadofx;
     requires tornadofx.controls;
     requires radiobrowser4j;
+    requires ffmpeg;
 
 
     opens hr.java.player.gui to javafx.fxml;

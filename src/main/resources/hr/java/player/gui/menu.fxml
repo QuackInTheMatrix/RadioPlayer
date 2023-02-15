@@ -33,6 +33,7 @@
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Korisnici" />
                   <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Stanice" />
+                  <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Pregled" />
               </items>
             </Menu>
             </menus>

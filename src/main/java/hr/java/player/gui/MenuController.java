@@ -42,6 +42,7 @@ public class MenuController {
                 case "Promjeni" -> imeDatoteke="promjeniKorisnika";
                 case "Korisnici" -> imeDatoteke="administracijaKorisnika";
                 case "Stanice" -> imeDatoteke="administracijaStanica";
+                case "Pregled" -> imeDatoteke="pregledPromjena";
                 default -> imeDatoteke="prijava";
             }
             if (!(imeDatoteke.equals("prijava") || imeDatoteke.equals("registracija")) && !GlavnaAplikacija.isLoggedIn()){

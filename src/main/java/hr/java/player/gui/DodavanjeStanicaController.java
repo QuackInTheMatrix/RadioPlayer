@@ -105,7 +105,6 @@ public class DodavanjeStanicaController implements Pretrazljiv{
         Station odabranaStanica=radioTableView.getSelectionModel().getSelectedItem();
         if (odabranaStanica!=null){
             GlavnaAplikacija.playMedia(odabranaStanica.getUrl());
-            System.out.println(odabranaStanica.getUrl());
         }else{
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Neuspjesno");

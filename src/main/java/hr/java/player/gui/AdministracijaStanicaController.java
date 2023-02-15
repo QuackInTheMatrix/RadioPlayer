@@ -36,6 +36,14 @@ public final class AdministracijaStanicaController implements Administrirajuci {
         bitrateColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getBitrate()).asObject());
         stationTableView.setItems(FXCollections.observableArrayList(sveStanice));
     }
+    private void clearFields(){
+        nazivField.clear();
+        zanrField.clear();
+        zemljaField.clear();
+        codecField.clear();
+        bitrateField.clear();
+        urlField.clear();
+    }
     @FXML
     void pretrazi(){
         String naziv = nazivField.getText();
@@ -97,7 +105,7 @@ public final class AdministracijaStanicaController implements Administrirajuci {
                     alert.setHeaderText("Stanica je uspjesno unesena");
                     alert.setContentText("Stanica "+novaStanica.getName()+" je uspjesno unesena!");
                     alert.showAndWait();
-                    Logging.logger.info("Stanica se vec nalazi u bazi te ju nije moguce unjeti.");
+                    clearFields();
                 } catch (NumberFormatException ex) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Neuspjesan unos!");
@@ -170,6 +178,7 @@ public final class AdministracijaStanicaController implements Administrirajuci {
                     }
                     BazaPodataka.promjeniStanicu(odabranaStanica, naziv, zemlja, codec, bitrate, zanr, url);
                     initialize();
+                    clearFields();
                 } catch (NumberFormatException e) {
                     Alert alertN = new Alert(Alert.AlertType.INFORMATION);
                     alertN.setTitle("Neuspjesna promjena!");

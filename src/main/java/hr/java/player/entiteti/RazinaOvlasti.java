@@ -1,6 +1,8 @@
 package hr.java.player.entiteti;
 
-public enum RazinaOvlasti {
+import java.io.Serializable;
+
+public enum RazinaOvlasti implements Serializable {
     USER(0,"User"),
     ADMIN(1,"Admin");
     final int razina;

@@ -2,7 +2,9 @@ package hr.java.player.entiteti;
 
 import de.sfuhrm.radiobrowser4j.Station;
 
-public class Stanica extends Entitet{
+import java.io.Serializable;
+
+public class Stanica extends Entitet implements Serializable {
     private Station stanica;
 
     public static class Builder{

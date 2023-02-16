@@ -1,31 +1,40 @@
 package hr.java.player.gui;
 
 import hr.java.player.entiteti.RazinaOvlasti;
-import hr.java.player.util.Logging;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
 
 public class MenuController {
     @FXML
-    private MenuItem registracijaMenuItem;
+    private MenuItem registracijaMenuItem, odjavaMenuItem, prijavaMenuItem;
     @FXML
-    private Menu administracijaMenu;
+    private Slider volumeSlider;
+    @FXML
+    private Menu administracijaMenu, volumeMenu, radioMenu, playbackMenu;
     @FXML
     void initialize(){
         if (GlavnaAplikacija.isLoggedIn()){
+            prijavaMenuItem.setVisible(false);
+            volumeSlider.lookupAll(".tick-label").forEach(label -> label.setStyle("-fx-font-size: 50px;"));
+            volumeSlider.setValue(GlavnaAplikacija.getCurrentVolume()*100);
+            volumeSlider.valueProperty().addListener(((observableValue, oldValue, newValue) -> GlavnaAplikacija.changeVolume((Double) newValue)));
             registracijaMenuItem.setText("Promjeni");
             if (GlavnaAplikacija.getKorisnik().getRazinaOvlasti()== RazinaOvlasti.USER){
                 administracijaMenu.setVisible(false);
             }
         }else{
             administracijaMenu.setVisible(false);
+            volumeMenu.setVisible(false);
+            radioMenu.setVisible(false);
+            playbackMenu.setVisible(false);
+            odjavaMenuItem.setVisible(false);
         }
     }
     @FXML
@@ -44,15 +53,6 @@ public class MenuController {
                 case "Stanice" -> imeDatoteke="administracijaStanica";
                 case "Pregled" -> imeDatoteke="pregledPromjena";
                 default -> imeDatoteke="prijava";
-            }
-            if (!(imeDatoteke.equals("prijava") || imeDatoteke.equals("registracija")) && !GlavnaAplikacija.isLoggedIn()){
-                imeDatoteke="prijava";
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Nedozvoljen pristup");
-                alert.setHeaderText("Potrebna prijava");
-                alert.setContentText("Kako bi ste pristupili "+kliknuti.getText()+" prvo se potrebno prijaviti");
-                alert.showAndWait();
-                Logging.logger.info("Pokusaj brisanja stanice bez odabira stanice u tabilici");
             }
             BorderPane root = FXMLLoader.load(getClass().getResource(imeDatoteke+".fxml"));
             GlavnaAplikacija.setNewStage(root);

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.CustomMenuItem?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane prefHeight="500.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hr.java.player.gui.MenuController">
@@ -11,22 +13,31 @@
             <menus>
                 <Menu mnemonicParsing="false" text="Account">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Prijava" />
+                        <MenuItem fx:id="prijavaMenuItem" mnemonicParsing="false" onAction="#promjeniEkran" text="Prijava" />
                         <MenuItem fx:id="registracijaMenuItem" mnemonicParsing="false" onAction="#promjeniEkran" text="Registracija" />
-                  <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Odjava" />
+                  <MenuItem fx:id="odjavaMenuItem" mnemonicParsing="false" onAction="#promjeniEkran" text="Odjava" />
                     </items>
                 </Menu>
-            <Menu mnemonicParsing="false" text="Radio">
+            <Menu fx:id="radioMenu" mnemonicParsing="false" text="Radio">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Slusaj" />
                   <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Dodaj" />
                   <MenuItem mnemonicParsing="false" onAction="#promjeniEkran" text="Ukloni" />
               </items>
             </Menu>
-            <Menu mnemonicParsing="false" text="Playback">
+            <Menu fx:id="playbackMenu" mnemonicParsing="false" text="Playback">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#playbackControl" text="Play" />
                   <MenuItem mnemonicParsing="false" onAction="#playbackControl" text="Pauziraj" />
+              </items>
+            </Menu>
+            <Menu fx:id="volumeMenu" mnemonicParsing="false" text="Volume">
+              <items>
+                  <CustomMenuItem hideOnClick="false" mnemonicParsing="false" text="Volume">
+                     <content>
+                        <Slider fx:id="volumeSlider" minorTickCount="5" showTickLabels="true" showTickMarks="true" value="10.0" />
+                     </content>
+                  </CustomMenuItem>
               </items>
             </Menu>
             <Menu fx:id="administracijaMenu" mnemonicParsing="false" text="Administracija">

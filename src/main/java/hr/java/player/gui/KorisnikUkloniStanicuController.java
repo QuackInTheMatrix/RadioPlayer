@@ -9,12 +9,10 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-public class KorisnikUkloniStanicuController implements Pretrazljiv{
+public class KorisnikUkloniStanicuController implements Pretrazljiv, Alertable{
     @FXML
     private TextField nazivField, zanrField, zemljaField, codecField, bitrateField;
     @FXML
@@ -49,11 +47,7 @@ public class KorisnikUkloniStanicuController implements Pretrazljiv{
             }
             radioTableView.setItems(FXCollections.observableArrayList(filtrirajStanice(korisnikoveStanice,naziv,zanr,zemlja,codec,bitrate)));
         }catch (NumberFormatException e){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Neuspjesna pretraga!");
-            alert.setHeaderText("Nije moguce pretraziti stanice");
-            alert.setContentText("Za bitrate je potrebno unjeti broj ili polje ostaviti prazno!");
-            alert.showAndWait();
+            createAlert("Neuspjesna pretraga!", "Nije moguce pretraziti stanice", "Za bitrate je potrebno unjeti broj ili ostaviti prazno!", Alert.AlertType.INFORMATION);
             Logging.logger.error(e.getMessage(),e);
         }
     }
@@ -61,34 +55,18 @@ public class KorisnikUkloniStanicuController implements Pretrazljiv{
     void obrisi(){
         Station odabranaStanica = radioTableView.getSelectionModel().getSelectedItem();
         if (odabranaStanica!=null){
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Brisanje stanice");
-            alert.setHeaderText("Zelite li obrisati stanicu?");
-            alert.setContentText("Jeste li sigurni da zelite obrisati stanicu "+odabranaStanica.getName()+" ?");
-            ButtonType daButton = new ButtonType("Da");
-            ButtonType neButton = new ButtonType("Ne");
-            alert.getButtonTypes().setAll(daButton, neButton);
-            Optional<ButtonType> odabraniButton = alert.showAndWait();
-            if (odabraniButton.get()==daButton) {
+            if (createAlertWithResponse("Brisanje stanice","Zelite li obrisati stanicu?","Jeste li sigurni da zelite obrisati stanicu "+odabranaStanica.getName()+" ?")) {
                 try {
                     BazaPodataka.obrisiStanicuKorisniku(GlavnaAplikacija.getKorisnik().getId(), odabranaStanica);
                     initialize();
                 } catch (BazaPodatakaException e) {
-                    Alert alertB = new Alert(Alert.AlertType.ERROR);
-                    alertB.setTitle("Greska");
-                    alertB.setHeaderText("Dogodila se greska pri radu s bazom");
-                    alertB.setContentText(e.getMessage());
-                    alertB.showAndWait();
-                    Logging.logger.error(e.getMessage(), e);
+                    createAlert("Greska", "Dogodila se greska pri radu s bazom", e.getMessage(), Alert.AlertType.ERROR);
+                    Logging.logger.error(e.getMessage(),e);
                 }
                 initialize();
             }
         }else{
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Neuspjesno brisanje");
-            alert.setHeaderText("Nije moguce obrisati stanicu");
-            alert.setContentText("Potrebno je odabrati stanicu koju zelite obrisati!");
-            alert.showAndWait();
+            createAlert("Neuspjesno brisanje", "Nije moguce obrisati stanicu", "Potrebno je odabrati stanicu koju zelite obrisati!", Alert.AlertType.INFORMATION);
             Logging.logger.info("Pokusaj brisanja stanice bez odabira stanice u tabilici");
         }
     }

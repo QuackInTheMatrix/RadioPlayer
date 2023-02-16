@@ -9,13 +9,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-public final class AdministracijaStanicaController implements Administrirajuci {
+public final class AdministracijaStanicaController implements Administrirajuci, Alertable {
     @FXML
     private TextField nazivField, bitrateField, zanrField, zemljaField, codecField, urlField;
     @FXML
@@ -70,11 +68,7 @@ public final class AdministracijaStanicaController implements Administrirajuci {
             stationTableView.setItems(FXCollections.observableArrayList(filtriraneStanice));
             stationTableView.getSelectionModel().clearSelection();
         }catch (NumberFormatException e){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Neuspjesna pretraga!");
-            alert.setHeaderText("Nije moguce pretraziti stanice");
-            alert.setContentText("Za bitrate je potrebno unjeti broj ili polje ostaviti prazno!");
-            alert.showAndWait();
+            createAlert("Neuspjesna pretraga!", "Nije moguce pretraziti stanice", "Za bitrate je potrebno unjeti broj ili polje ostaviti prazno!", Alert.AlertType.INFORMATION);
             Logging.logger.error(e.getMessage(),e);
         }
     }
@@ -88,7 +82,7 @@ public final class AdministracijaStanicaController implements Administrirajuci {
         String url = urlField.getText();
         Integer bitrate;
         if (!naziv.isEmpty() && !url.isEmpty() && !bitrateText.isEmpty() && !zemlja.isEmpty() && !codec.isEmpty()) {
-            if (BazaPodataka.dohvatiStanice(null,"","","",null,"",url).isEmpty()){
+            if (!BazaPodataka.stanicaExists(url)){
                 try {
                     bitrate = Integer.parseInt(bitrateText);
                     Station novaStanica = new Station();
@@ -100,32 +94,15 @@ public final class AdministracijaStanicaController implements Administrirajuci {
                     novaStanica.setUrl(url);
                     BazaPodataka.unesiStanicu(null, novaStanica);
                     initialize();
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Uspjesan unos");
-                    alert.setHeaderText("Stanica je uspjesno unesena");
-                    alert.setContentText("Stanica "+novaStanica.getName()+" je uspjesno unesena!");
-                    alert.showAndWait();
+                    createAlert("Uspjesan unos", "Stanica je uspjesno unesena", "Stanica "+novaStanica.getName()+" je uspjesno unesena!", Alert.AlertType.INFORMATION);
                     clearFields();
-                } catch (NumberFormatException ex) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Neuspjesan unos!");
-                    alert.setHeaderText("Nije moguce unjeti stanicu");
-                    alert.setContentText("Za bitrate je potrebno unjeti broj!");
-                    alert.showAndWait();
-                }catch (BazaPodatakaException e){
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Greska");
-                    alert.setHeaderText("Dogodila se greska pri radu s bazom");
-                    alert.setContentText(e.getMessage());
-                    alert.showAndWait();
+                    initialize();
+                } catch (NumberFormatException e) {
+                    createAlert("Neuspjesan unos!", "Nije moguce unjeti stanicu", "Za bitrate je potrebno unjeti broj!", Alert.AlertType.INFORMATION);
                     Logging.logger.error(e.getMessage(),e);
                 }
             }else{
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Stanica vec postoji");
-                alert.setHeaderText("Nije moguce unjeti stanicu u bazu");
-                alert.setContentText("Stanica se vec nalazi u bazi te ju nije moguce unjeti.");
-                alert.showAndWait();
+                createAlert("Stanica vec postoji", "Nije moguce unjeti stanicu u bazu", "Stanica se vec nalazi u bazi te ju nije moguce unjeti.", Alert.AlertType.INFORMATION);
                 Logging.logger.info("Stanica se vec nalazi u bazi te ju nije moguce unjeti.");
             }
         }else{
@@ -144,11 +121,7 @@ public final class AdministracijaStanicaController implements Administrirajuci {
             }
 
             String praznaPolja = String.join(", ",nePopunjenaPolja);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Neuspjesan unos");
-            alert.setHeaderText("Pogreska prilikom unosa stanice.");
-            alert.setContentText("Potrebno je popuniti sva polja!\n Niste unjeli: "+praznaPolja+"\n Jedino opcionalno polje su zanrovi.");
-            alert.showAndWait();
+            createAlert("Neuspjesan unos", "Pogreska prilikom unosa stanice.", "Potrebno je popuniti sva polja!\n Niste unjeli: "+praznaPolja+"\n Jedino opcionalno polje su zanrovi.", Alert.AlertType.INFORMATION);
             Logging.logger.info("Sva potrebna polja nisu popunjena prilikom unosa stanice");
         }
     }
@@ -163,15 +136,7 @@ public final class AdministracijaStanicaController implements Administrirajuci {
         Integer bitrate=null;
         Station odabranaStanica = stationTableView.getSelectionModel().getSelectedItem();
         if (odabranaStanica!=null){
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Promjena stanice");
-            alert.setHeaderText("Zelite li promjeniti stanicu?");
-            alert.setContentText("Jeste li sigurni da zelite promjeniti stanicu "+odabranaStanica.getName()+" ?");
-            ButtonType daButton = new ButtonType("Da");
-            ButtonType neButton = new ButtonType("Ne");
-            alert.getButtonTypes().setAll(daButton, neButton);
-            Optional<ButtonType> odabraniButton = alert.showAndWait();
-            if (odabraniButton.get()==daButton) {
+            if (createAlertWithResponse("Promjena stanice", "Zelite li promjeniti stanicu?", "Jeste li sigurni da zelite promjeniti stanicu "+odabranaStanica.getName()+" ?")) {
                 try {
                     if (!bitrateText.isEmpty()) {
                         bitrate = Integer.parseInt(bitrateText);
@@ -180,27 +145,15 @@ public final class AdministracijaStanicaController implements Administrirajuci {
                     initialize();
                     clearFields();
                 } catch (NumberFormatException e) {
-                    Alert alertN = new Alert(Alert.AlertType.INFORMATION);
-                    alertN.setTitle("Neuspjesna promjena!");
-                    alertN.setHeaderText("Nije moguce promjeniti stanicu");
-                    alertN.setContentText("Potrebno je za bitrate unjeti broj ili polje ostaviti prazno!");
-                    alertN.showAndWait();
-                    Logging.logger.error(e.getMessage(), e);
+                    createAlert("Neuspjesna promjena!", "Nije moguce promjeniti stanicu", "Za bitrate je potrebno unjeti broj ili ostaviti prazno!", Alert.AlertType.INFORMATION);
+                    Logging.logger.error(e.getMessage(),e);
                 } catch (BazaPodatakaException e) {
-                    Alert alertB = new Alert(Alert.AlertType.ERROR);
-                    alertB.setTitle("Greska");
-                    alertB.setHeaderText("Dogodila se greska pri radu s bazom");
-                    alertB.setContentText(e.getMessage());
-                    alertB.showAndWait();
-                    Logging.logger.error(e.getMessage(), e);
+                    createAlert("Greska", "Dogodila se greska pri radu s bazom", e.getMessage(), Alert.AlertType.ERROR);
+                    Logging.logger.error(e.getMessage(),e);
                 }
             }
         }else{
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Neuspjesna promjena!");
-            alert.setHeaderText("Odaberite stanicu");
-            alert.setContentText("Potrebno je odabrati barem jednu stanicu koju zelite promjeniti!");
-            alert.showAndWait();
+            createAlert("Neuspjesna promjena!", "Odaberite stanicu", "Potrebno je odabrati barem jednu stanicu koju zelite promjeniti!", Alert.AlertType.INFORMATION);
             Logging.logger.info("Pokusaj promjene stanice bez odabira stanice u tabilici");
         }
     }
@@ -208,33 +161,17 @@ public final class AdministracijaStanicaController implements Administrirajuci {
     void obrisi(){
         Station odabranaStanica = stationTableView.getSelectionModel().getSelectedItem();
         if (odabranaStanica!=null){
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Brisanje stanice");
-            alert.setHeaderText("Zelite li obrisati stanicu?");
-            alert.setContentText("Jeste li sigurni da zelite obrisati stanicu "+odabranaStanica.getName()+" ?");
-            ButtonType daButton = new ButtonType("Da");
-            ButtonType neButton = new ButtonType("Ne");
-            alert.getButtonTypes().setAll(daButton, neButton);
-            Optional<ButtonType> odabraniButton = alert.showAndWait();
-            if (odabraniButton.get()==daButton) {
+            if (createAlertWithResponse("Brisanje stanice", "Zelite li obrisati stanicu?", "Jeste li sigurni da zelite obrisati stanicu "+odabranaStanica.getName()+" ?")) {
                 try {
                     BazaPodataka.obrisiStanicu(odabranaStanica);
+                    initialize();
                 } catch (BazaPodatakaException e) {
-                    Alert alertB = new Alert(Alert.AlertType.ERROR);
-                    alertB.setTitle("Greska");
-                    alertB.setHeaderText("Dogodila se greska pri radu s bazom");
-                    alertB.setContentText(e.getMessage());
-                    alertB.showAndWait();
-                    Logging.logger.error(e.getMessage(), e);
+                    createAlert("Greska", "Dogodila se greska pri radu s bazom", e.getMessage(), Alert.AlertType.ERROR);
+                    Logging.logger.error(e.getMessage(),e);
                 }
-                initialize();
             }
         }else{
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Neuspjesno brisanje");
-            alert.setHeaderText("Nije moguce obrisati stanicu");
-            alert.setContentText("Potrebno je odabrati stanicu koju zelite obrisati!");
-            alert.showAndWait();
+            createAlert("Neuspjesno brisanje", "Nije moguce obrisati stanicu", "Potrebno je odabrati stanicu koju zelite obrisati!", Alert.AlertType.INFORMATION);
             Logging.logger.info("Pokusaj brisanja stanice bez odabira stanice u tabilici");
         }
     }

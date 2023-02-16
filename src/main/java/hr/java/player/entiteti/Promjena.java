@@ -22,7 +22,10 @@ public class Promjena<T,E extends Entitet> implements Serializable {
     public String getTipPromjenjenog(){
         if (objektPromjene instanceof Korisnik){
             return "Korisnik";
-        }else if(objektPromjene instanceof StanicaSerializable){
+        }else if(objektPromjene instanceof StanicaSerializable stanicaSerializable){
+            if (stanicaSerializable.getId()==null){
+                return "Korisnik_Stanica";
+            }
             return "Stanica";
         }
         return "Nepoznata vrsta objekta, pogreska!";

@@ -4,7 +4,7 @@ import hr.java.player.gui.GlavnaAplikacija;
 import javafx.scene.media.MediaPlayer;
 
 public class UpdateTitle implements Runnable{
-    private String stariTitle, dohvaceniTitle;
+    private final String stariTitle, dohvaceniTitle;
 
     public UpdateTitle(String stariTitle, String dohvaceniTitle) {
         this.stariTitle = stariTitle;
@@ -13,8 +13,8 @@ public class UpdateTitle implements Runnable{
 
     @Override
     public void run() {
-            if (GlavnaAplikacija.getStatus().equals(MediaPlayer.Status.PLAYING) && !stariTitle.equals(dohvaceniTitle)){
-                    GlavnaAplikacija.setTitle(dohvaceniTitle);
-            }
+        if (GlavnaAplikacija.getStatus().equals(MediaPlayer.Status.PLAYING) && !stariTitle.equals(dohvaceniTitle)) {
+            GlavnaAplikacija.setTitle(dohvaceniTitle);
+        }
     }
 }

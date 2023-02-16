@@ -3,7 +3,7 @@ package hr.java.player.gui;
 import de.sfuhrm.radiobrowser4j.SearchMode;
 import de.sfuhrm.radiobrowser4j.Station;
 import hr.java.player.baza.BazaPodataka;
-import hr.java.player.iznimke.BazaPodatakaException;
+import hr.java.player.entiteti.Stanica;
 import hr.java.player.util.Logging;
 import hr.java.player.util.RadioStations;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -14,7 +14,7 @@ import javafx.scene.control.*;
 
 import java.util.List;
 
-public class DodavanjeStanicaController implements Pretrazljiv{
+public class DodavanjeStanicaController implements Pretrazljiv, Alertable{
     @FXML
     private ChoiceBox<String> tipPretrageChoiceBox;
     @FXML
@@ -57,11 +57,7 @@ public class DodavanjeStanicaController implements Pretrazljiv{
             }
             if (glavnaPretraga.isEmpty()){
                 if (!naziv.isEmpty() || !zanr.isEmpty() || !zemlja.isEmpty() || !codec.isEmpty() || bitrate!=null){
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Neuspjesna pretraga");
-                    alert.setHeaderText("Nije moguce pretraziti stanice");
-                    alert.setContentText("Potrebno je odabrati glavni nacin pretrage iz choiceboxa i unjeti zeljenju vrjednost");
-                    alert.showAndWait();
+                    createAlert("Neuspjesna pretraga", "Nije moguce pretraziti stanice", "Potrebno je odabrati glavni nacin pretrage iz choiceboxa i unjeti zeljenju vrjednost", Alert.AlertType.INFORMATION);
                 }else{
                     radioTableView.setItems(FXCollections.observableArrayList(RadioStations.dohvatiStanice()));
                 }
@@ -69,11 +65,7 @@ public class DodavanjeStanicaController implements Pretrazljiv{
                 radioTableView.setItems(FXCollections.observableArrayList(filtrirajStanice(RadioStations.dohvatiStanice(mode, glavnaPretraga),naziv,zanr,zemlja,codec,bitrate)));
             }
         }catch (NumberFormatException e){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Neuspjesna pretraga!");
-            alert.setHeaderText("Nije moguce pretraziti stanice");
-            alert.setContentText("Za bitrate je potrebno unjeti broj ili polje ostaviti prazno!");
-            alert.showAndWait();
+            createAlert("Neuspjesna pretraga!", "Nije moguce pretraziti stanice", "Za bitrate je potrebno unjeti broj ili ostaviti prazno!", Alert.AlertType.INFORMATION);
             Logging.logger.error(e.getMessage(),e);
         }
     }
@@ -81,22 +73,22 @@ public class DodavanjeStanicaController implements Pretrazljiv{
     void dodaj(){
         Station odabranaStanica = radioTableView.getSelectionModel().getSelectedItem();
         if (odabranaStanica!=null){
-            try {
+            if (BazaPodataka.stanicaExists(odabranaStanica.getUrl())){
+                Stanica odabrana = BazaPodataka.dohvatiStanice(null,"","","",null,"", odabranaStanica.getUrl()).get(0);
+                if (!BazaPodataka.dohvatiKorisnikoveStanice(GlavnaAplikacija.getKorisnik().getId(), odabrana.getId()).isEmpty()){
+                    createAlert("Postojeca stanica", "Stanica je vec u favoritima",  "Stanica se vec nalazi na stranci slusaj pod favoritima.", Alert.AlertType.INFORMATION);
+                }else{
+                    BazaPodataka.unesiStanicu(GlavnaAplikacija.getKorisnik().getId(), odabranaStanica);
+                    createAlert("Uspjesno dodavanje", "Stanica dodana u favorite", "Stanica "+odabranaStanica.getName()+" uspjesno je dodana u favorite", Alert.AlertType.INFORMATION);
+                    Logging.logger.info("Stanica "+odabranaStanica.getName()+" dodana je u bazu");
+                }
+            }else{
                 BazaPodataka.unesiStanicu(GlavnaAplikacija.getKorisnik().getId(), odabranaStanica);
-            } catch (BazaPodatakaException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Greska");
-                alert.setHeaderText("Dogodila se greska pri radu s bazom");
-                alert.setContentText(e.getMessage());
-                alert.showAndWait();
-                Logging.logger.error(e.getMessage(),e);
+                createAlert("Uspjesno dodavanje", "Stanica dodana u favorite", "Stanica "+odabranaStanica.getName()+" uspjesno je dodana u favorite", Alert.AlertType.INFORMATION);
+                Logging.logger.info("Stanica "+odabranaStanica.getName()+" dodana je u bazu");
             }
         }else{
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Neuspjesno dodavanje");
-            alert.setHeaderText("Potrebno je odabrati stanicu");
-            alert.setContentText("Kako bi se stanica mogla dodati potrebno ju je odabrati u tablici!");
-            alert.showAndWait();
+            createAlert("Neuspjesno dodavanje", "Potrebno je odabrati stanicu", "Kako bi se stanica mogla dodati potrebno ju je odabrati u tablici!", Alert.AlertType.INFORMATION);
             Logging.logger.info("Pokusaj dodavanja stanice bez odabira u tablici");
         }
     }
@@ -106,11 +98,7 @@ public class DodavanjeStanicaController implements Pretrazljiv{
         if (odabranaStanica!=null){
             GlavnaAplikacija.playMedia(odabranaStanica.getUrl());
         }else{
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Neuspjesno");
-            alert.setHeaderText("Potrebno je odabrati stanicu");
-            alert.setContentText("Kako bi se stanica mogla pustiti potrebno ju je odabrati u tablici!");
-            alert.showAndWait();
+            createAlert("Pogreska", "Potrebno je odabrati stanicu", "Kako bi se stanica mogla pustiti potrebno ju je odabrati u tablici!", Alert.AlertType.INFORMATION);
         }
     }
 }

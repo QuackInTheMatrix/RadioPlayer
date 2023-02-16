@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PrijavaController {
+public class PrijavaController implements Alertable{
     @FXML
     private TextField usernameField;
     @FXML
@@ -31,19 +31,11 @@ public class PrijavaController {
             try{
                 prijava();
             }catch (DatotekaException e){
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Greska");
-                alert.setHeaderText("Dogodila se greska pri radu sa datotekom");
-                alert.setContentText(e.getMessage());
-                alert.showAndWait();
+                createAlert("Greska", "Dogodila se greska pri radu sa datotekom", e.getMessage(), Alert.AlertType.ERROR);
                 Logging.logger.error(e.getMessage(),e);
             }
             catch (KorisnikException e){
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Neuspjesna prijava");
-                alert.setHeaderText("Unjeli ste pogresan username ili password");
-                alert.setContentText("Kod prijave uneseni su pogresni korisnicki podaci, pokusajte ponovo.");
-                alert.showAndWait();
+                createAlert("Greska", "Dogodila se greska pri radu s bazom", e.getMessage(), Alert.AlertType.ERROR);
                 Logging.logger.error(e.getMessage(),e);
             }
         });
@@ -70,18 +62,9 @@ public class PrijavaController {
             try {
                 BorderPane root = FXMLLoader.load(getClass().getResource("prijava.fxml"));
                 GlavnaAplikacija.setNewStage(root);
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Uspjesna prijava!");
-                alert.setHeaderText("Uspjesno ste se prijavili");
-                alert.setContentText("Dobrodosli "+GlavnaAplikacija.getKorisnik().getIme()+".\n " +
-                        "Radio mozete poceti slusati klikom na menu Radio->Dodaj gdje mozete isporobati i dodati radio u favorite koji ce se prikazivati na stranici Radio->Slusaj.");
-                alert.showAndWait();
+                createAlert("Uspjesna prijava!", "Uspjesno ste se prijavili", "Dobrodosli "+GlavnaAplikacija.getKorisnik().getIme()+".\nRadio mozete poceti slusati klikom na menu Radio->Dodaj gdje mozete isporobati i dodati radio u favorite koji ce se prikazivati na stranici Radio->Slusaj.", Alert.AlertType.INFORMATION);
             } catch (IOException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Greska");
-                alert.setHeaderText("Dogodila se greska pri radu sa fxml datotekom");
-                alert.setContentText(e.getMessage());
-                alert.showAndWait();
+                createAlert("Greska", "Dogodila se greska pri radu sa fxml datotekom", e.getMessage(), Alert.AlertType.ERROR);
                 Logging.logger.error(e.getMessage(),e);
             }
         }else{

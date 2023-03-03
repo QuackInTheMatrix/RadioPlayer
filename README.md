@@ -4,7 +4,7 @@ A basic radio player application that utilizes JavaFX, FFmpeg, radiobrowser4j an
 ## Setup
 The application requires minimal setup to start working<br/>
 The only thing that needs to be manually configured is the h2 database<br/>
-To do so download the h2 database and create a new database called 'radioplayer' with user: 'username' and password 'password'<br/>
+To do so download the h2 database and create a new database called 'radioplayer' with user: 'username' and password 'password'
 (If there is a need to change the database name, username and password it can be changed in the dat/database.properties file)<br/>
 After the database is created import the sql dump file from dat/dump.sql<br/>
 And that's it, the application is ready to be used to listen to your favorite radio stations

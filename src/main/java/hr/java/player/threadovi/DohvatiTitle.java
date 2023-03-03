@@ -36,7 +36,7 @@ public class DohvatiTitle implements Runnable{
                             Thread thread = new Thread(new PohraniTitle(streamName));
                             thread.start();
                         } else {
-                            Thread thread = new Thread(new PohraniTitle("Nemoguce dohvatiti pjesmu."));
+                            Thread thread = new Thread(new PohraniTitle("Nemoguce dohvatiti pjesmu"));
                             thread.start();
                         }
                     } catch (IOException e) {

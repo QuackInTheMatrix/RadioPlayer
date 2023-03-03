@@ -115,7 +115,7 @@ public final class AdministracijaKorisnikaController implements Administrirajuci
             if (!username.isEmpty()){
                 if (BazaPodataka.usernameExists(username)){
                     ispravan=false;
-                    System.out.println("Potrebno je unjeti unikatan novu username");
+                    createAlert("Neuspjesna promjena","Neunikatno korisnicko ime","Potrebno je unjeti unikatno korisnicko ime", Alert.AlertType.INFORMATION);
                 }
             }
             if (ispravan) {

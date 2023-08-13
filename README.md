@@ -21,9 +21,9 @@ play online radio streams.
 <b>Note:</b> The docker database container uses linux so make sure you are running it on WSL if you are on Windows.
 
 The recommended way to use RadioPlayer is with a prebuilt jar and a dockerized database.<br/>
-This process is described in the [Automatic](#Automatic) section.<br/>
+This process is described in the [Automatic](#automatic) section.<br/>
 If however you wish to tinker with the application yourself or set up the database manually this can also be done.
-The process of getting everything ready is described in the [Build it yourself](#Build-it-yourself) section below.
+The process of getting everything ready is described in the [Build it yourself](#build-it-yourself) section below.
 
 ### Automatic
 The process of setting up the application is very simple and can be done in only 3 steps.<br/>

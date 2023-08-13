@@ -38,4 +38,7 @@ build/
 .DS_Store
 
 ### Logovi ###
-.logs/pogreske.log
+/logs/pogreske.log
+
+# ignore generated JARs
+/out/

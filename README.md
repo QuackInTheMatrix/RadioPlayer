@@ -18,7 +18,7 @@ play online radio streams.
 * Threaded fetching of current song and synchronized access to the title variable
 
 ## Setup
-<b>Note:</b> The docker database container uses linux so make sure you are running it on WSL if you are on Windows.
+**Note:** The docker database container uses linux so make sure you are running it on WSL if you are on Windows.
 
 The recommended way to use RadioPlayer is with a prebuilt jar and a dockerized database.<br/>
 This process is described in the [Automatic](#automatic) section.<br/>
@@ -57,7 +57,8 @@ Below is a list of steps needed to get everything running:
        For example if you are on linux, and cloned the repository to the Downloads directory the new path would look 
        something like this: <br/>
        `jdbc:h2:tcp://localhost/~/Downloads/git/RadioPlayer/dockerize_db/radioplayer`
-4. The last step is to load the project in your favourite IDE and build it.
+4. The last step is to load the project in your favourite IDE and build it.<br/>
+    **Note:** To build a jar artifact that can be run on multiple platforms uncomment the dependencies for other platforms.
 
 And that's it, you can now start tinkering with the project or just enjoy some music. Have fun with it!
 

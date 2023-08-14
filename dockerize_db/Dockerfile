@@ -1,6 +1,7 @@
-FROM eclipse-temurin:11
-RUN mkdir /opt/app
-COPY h2-2.1.214.jar /opt/app
-COPY .h2.server.properties radioplayer.mv.db /root/
+FROM alpine:3.18.3
 EXPOSE 8082 9092
-CMD ["java", "-jar", "/opt/app/h2-2.1.214.jar", "-webAllowOthers", "-tcpAllowOthers"]
+COPY h2-2.1.214.jar radioplayer.mv.db /root/
+COPY .h2.server.properties /root/
+RUN apk add openjdk11-jre-headless
+CMD ["java", "-jar", "/root/h2-2.1.214.jar", "-webAllowOthers", "-tcpAllowOthers"]
+

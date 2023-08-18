@@ -29,7 +29,7 @@ The process of getting everything ready is described in the [Build it yourself](
 The process of setting up the application is very simple and can be done in only 3 steps.<br/>
 1. Make sure you have java and docker installed.
 2. Run the container which contains the preconfigured database:<br>
-    `docker run -p 8082:8082 -p 9092:9092 -v h2_data:/root/ -d --name h2_database duckerize/radioplayer_h2db:latest`
+    `docker run -p 8082:8082 -p 9092:9092 -v h2_data:/root/ -d --name h2_database duckerize/radioplayer_h2db:latest` <br/>
 3. Download the <a href="https://github.com/QuackInTheMatrix/RadioPlayer/releases">latest  release</a> from the repository and run it by double-clicking on the jar file.
 
 And that's it, you now have a functional RadioPlayer where you can save, listen to and manage your favourite radio stations.<br/>
@@ -46,17 +46,21 @@ Below is a list of steps needed to get everything running:
 3. Set up the h2 database(it is already included in the project)<br/>
    #### Recommended(with docker)
    `docker run -p 8082:8082 -p 9092:9092 -v h2_data:/root/ -d --name h2_database duckerize/radioplayer_h2db:latest`<br/>
-    Note: The docker database image can be manually built from the dockerize_db directory if needed.
-    
-    #### Manual (without docker)
+    **Note:** The docker database image can be manually built from the dockerize_db directory if needed.<br/>
+   #### Alternative 1(with docker compose)
     1. Open a CLI like cmd/bash and navigate to the RadioPlayer/dockerize_db directory:<br/>
-        `cd RadioPlayer/dockerize_db`
-    2. Start the database(make sure to replace the '*' in the example with the actual version):<br/>
-        `java -jar h2-*.jar`
-    3. Go to dat/database.properties and change the path to the radiobrowser database:<br/>
-       For example if you are on linux, and cloned the repository to the Downloads directory the new path would look 
-       something like this: <br/>
-       `jdbc:h2:tcp://localhost/~/Downloads/git/RadioPlayer/dockerize_db/radioplayer`
+    `cd RadioPlayer/dockerize_db`
+    2. Create the container using docker compose:<br/>
+    `docker compose up -d`<br/>
+   #### Alternative 2(without docker)
+   1. Open a CLI like cmd/bash and navigate to the RadioPlayer/dockerize_db directory:<br/>
+     `cd RadioPlayer/dockerize_db`
+   2. Start the database(make sure to replace the '*' in the example with the actual version):<br/>
+     `java -jar h2-*.jar`
+   3. Go to dat/database.properties and change the path to the radiobrowser database:<br/>
+    For example if you are on linux, and cloned the repository to the Downloads directory the new path would look 
+    something like this: <br/>
+    `jdbc:h2:tcp://localhost/~/Downloads/git/RadioPlayer/dockerize_db/radioplayer`
 4. The last step is to load the project in your favourite IDE and build it.<br/>
     **Note:** To build a jar artifact that can be run on multiple platforms uncomment the dependencies for other platforms.
 

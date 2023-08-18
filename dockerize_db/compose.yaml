@@ -1,0 +1,11 @@
+services:
+    radioplayer_h2db:
+        image: 'duckerize/radioplayer_h2db:latest'
+        container_name: h2_database
+        ports:
+            - '8082:8082'
+            - '9092:9092'
+        volumes:
+            - 'h2_data:/root/'
+volumes:
+    h2_data:

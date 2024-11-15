@@ -6,6 +6,6 @@ services:
             - '8082:8082'
             - '9092:9092'
         volumes:
-            - 'h2_data:/root/'
+            - 'h2_data:/home/h2db/'
 volumes:
     h2_data:

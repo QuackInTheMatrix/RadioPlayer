@@ -29,7 +29,7 @@ The process of getting everything ready is described in the [Build it yourself](
 The process of setting up the application is very simple and can be done in only 3 steps.<br/>
 1. Make sure you have java and docker installed.
 2. Run the container which contains the preconfigured database:<br>
-    `docker run -p 8082:8082 -p 9092:9092 -v h2_data:/root/ -d --name h2_database duckerize/radioplayer_h2db:latest` <br/>
+    `docker run -p 8082:8082 -p 9092:9092 -v h2_data:/home/h2db/ -d --name h2_database duckerize/radioplayer_h2db:latest` <br/>
 3. Download the <a href="https://github.com/QuackInTheMatrix/RadioPlayer/releases">latest  release</a> from the repository and run it by double-clicking on the jar file.
 
 And that's it, you now have a functional RadioPlayer where you can save, listen to and manage your favourite radio stations.<br/>
@@ -45,7 +45,7 @@ Below is a list of steps needed to get everything running:
    `git clone https://github.com/QuackInTheMatrix/RadioPlayer`
 3. Set up the h2 database(it is already included in the project)<br/>
    #### Recommended(with docker)
-   `docker run -p 8082:8082 -p 9092:9092 -v h2_data:/root/ -d --name h2_database duckerize/radioplayer_h2db:latest`<br/>
+   `docker run -p 8082:8082 -p 9092:9092 -v h2_data:/home/h2db/ -d --name h2_database duckerize/radioplayer_h2db:latest`<br/>
     **Note:** The docker database image can be manually built from the dockerize_db directory if needed.<br/>
    #### Alternative 1(with docker compose)
     1. Open a CLI like cmd/bash and navigate to the RadioPlayer/dockerize_db directory:<br/>

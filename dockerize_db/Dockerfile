@@ -1,4 +1,4 @@
-FROM alpine:3.20.3
+FROM alpine:3.23.2
 EXPOSE 8082 9092
 HEALTHCHECK --interval=1m --timeout=5s CMD wget --spider 127.0.0.1:8082 || exit 1
 RUN apk add --no-cache openjdk11-jre-headless
